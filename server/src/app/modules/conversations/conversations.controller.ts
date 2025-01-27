@@ -13,11 +13,13 @@ const startANewConversation = catchAsync(async (req, res) => {
 });
 
 const removedAConversation = catchAsync(async (req, res) => {
-  const result = await conversationsService.removeAConversationFromDB(req.body);
+  const result = await conversationsService.removeAConversationFromDB(
+    req.params.cid,
+  );
   sendResponse(res, {
     success: true,
     status: 200,
-    message: 'Conversation deleted successfully',
+    message: 'Conversation removed successfully',
     data: result,
   });
 });
