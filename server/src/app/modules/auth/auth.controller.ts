@@ -1,12 +1,17 @@
-import UserModel from '../users/users.model';
+import catchAsync from '../../util/catchAsync';
+import sendResponse from '../../util/sendResponse';
+import authService from './auth.service';
 
-const login = async (payload: any) => {
-  const user = await UserModel.findOne({ email: payload.email });
-  if (!user) {
-    throw new Error('User not found');
-  }
+const login = catchAsync(async (req, res) => {
+  const result = await authService.login(req.body);
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'User logged in successfully',
+    data: result,
+  });
+});
 
-  if (user.isDeleted) {
-    throw new Error('User is no longer available');
-  }
+export default {
+  login,
 };
