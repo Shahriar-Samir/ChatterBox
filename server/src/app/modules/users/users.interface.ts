@@ -4,4 +4,5 @@ export type TUser = {
   lastName: string;
   email: string;
   password: string;
+  isDeleted: boolean;
 };
