@@ -7,7 +7,7 @@ const messageSchema = new Schema<TMessages>(
       required: true,
       unique: true,
     },
-    conversationId: {
+    CId: {
       type: String,
       required: true,
     },
@@ -21,11 +21,18 @@ const messageSchema = new Schema<TMessages>(
     },
     isDeletedForSender: {
       type: Boolean,
+      required: true,
       default: false,
     },
     isDeletedForAll: {
       type: Boolean,
+      required: true,
       default: false,
+    },
+    isEdited: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
   },
   {

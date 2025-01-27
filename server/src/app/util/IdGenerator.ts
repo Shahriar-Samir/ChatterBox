@@ -29,16 +29,7 @@ const IdGenerator = async (type: string) => {
       const serialNumber = parseInt(lastUserId.split('MID')[1]) + 1;
       return 'MID' + serialNumber;
     }
-    return 'MID';
-  }
-  if (type === 'message') {
-    const messages = await MessageModel.find();
-    if (messages.length > 0) {
-      const lastUserId = messages[messages.length - 1].MId;
-      const serialNumber = parseInt(lastUserId.split('MID')[1]) + 1;
-      return 'MID' + serialNumber;
-    }
-    return 'MID';
+    return 'MID0';
   }
 };
 

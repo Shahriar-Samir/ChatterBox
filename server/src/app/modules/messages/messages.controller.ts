@@ -12,9 +12,22 @@ const sendMessage = catchAsync(async (req, res) => {
   });
 });
 
+const editAMessage = catchAsync(async (req, res) => {
+  const result = await messagesService.updateAMessageIntoDB(
+    req.params.mid,
+    req.body,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'Message edited successfully',
+    data: result,
+  });
+});
+
 const removeAMessageForAll = catchAsync(async (req, res) => {
   const result = await messagesService.removeAMessageForAllIntoDB(
-    req.params.MId,
+    req.params.mid,
   );
   sendResponse(res, {
     success: true,
@@ -26,7 +39,7 @@ const removeAMessageForAll = catchAsync(async (req, res) => {
 
 const removeAMessageForSender = catchAsync(async (req, res) => {
   const result = await messagesService.removeAMessageForSenderIntoDB(
-    req.params.MId,
+    req.params.mid,
   );
   sendResponse(res, {
     success: true,
@@ -40,4 +53,5 @@ export default {
   sendMessage,
   removeAMessageForAll,
   removeAMessageForSender,
+  editAMessage,
 };
