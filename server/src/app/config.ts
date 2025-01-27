@@ -7,5 +7,5 @@ export default {
   port: process.env.PORT,
   dbURI: process.env.DB_URI,
   secret: process.env.SECRET,
-  saltRounds: process.env.SALT_ROUNDS,
+  saltRounds: parseInt(process.env.SALT_ROUNDS as string),
 };
