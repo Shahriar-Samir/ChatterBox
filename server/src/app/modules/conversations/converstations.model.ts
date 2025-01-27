@@ -1,5 +1,21 @@
 import { model, Schema } from 'mongoose';
-import TConversation from './conversations.interface';
+import TConversation, { TParticipant } from './conversations.interface';
+
+const participantSchema = new Schema<TParticipant>({
+  uid: {
+    type: String,
+    required: true,
+  },
+  joinedAt: {
+    type: String,
+    required: true,
+  },
+  lastReadMessageId: {
+    type: String,
+    required: true,
+    default: null,
+  },
+});
 
 const conversationSchema = new Schema<TConversation>(
   {
@@ -11,13 +27,18 @@ const conversationSchema = new Schema<TConversation>(
       type: String,
     },
     participants: {
-      type: [String],
+      type: [participantSchema],
       length: 10,
       required: true,
     },
     type: {
       type: String,
       enum: ['inbox', 'group'],
+      required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
       required: true,
     },
   },

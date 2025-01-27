@@ -3,10 +3,7 @@ import conversationsController from './conversations.controller';
 
 const router = express.Router();
 
-router.post(
-  '/startConversation',
-  conversationsController.startANewConversation,
-);
+router.post('/', conversationsController.startANewConversation);
 
 const conversationRoutes = router;
 

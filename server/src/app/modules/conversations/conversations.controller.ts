@@ -7,7 +7,7 @@ const startANewConversation = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     status: 200,
-    message: 'Message sent successfully',
+    message: 'Conversation created successfully',
     data: result,
   });
 });
@@ -17,7 +17,7 @@ const removedAConversation = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     status: 200,
-    message: 'Message sent successfully',
+    message: 'Conversation deleted successfully',
     data: result,
   });
 });

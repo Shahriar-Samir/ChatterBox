@@ -1,4 +1,4 @@
-type TParticipant = {
+export type TParticipant = {
   uid: string;
   joinedAt: string;
   lastReadMessageId: string;
@@ -11,7 +11,7 @@ type TConversation = {
   type: 'inbox' | 'group';
   createdAt: String;
   updatedAt: String;
-  isDeleted: true;
+  isDeleted: false;
 };
 
 export default TConversation;
