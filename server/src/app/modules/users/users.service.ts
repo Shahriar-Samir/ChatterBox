@@ -1,3 +1,4 @@
+import IdGenerator from '../../util/IdGenerator';
 import { TUser } from './users.interface';
 import UserModel from './users.model';
 
@@ -7,6 +8,9 @@ const getSingleUserFromDB = async (uid: string) => {
 };
 
 const createUserIntoDB = async (payload: TUser) => {
+  const uid = await IdGenerator('user');
+  console.log(uid);
+  payload.uid = uid as string;
   const result = await UserModel.create(payload);
   return result;
 };
