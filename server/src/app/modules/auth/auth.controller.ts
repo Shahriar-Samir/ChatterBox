@@ -12,6 +12,17 @@ const login = catchAsync(async (req, res) => {
   });
 });
 
+const logout = catchAsync(async (req, res) => {
+  const result = await authService.logout(req.params.uid);
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'User logged out successfully',
+    data: result,
+  });
+});
+
 export default {
   login,
+  logout,
 };

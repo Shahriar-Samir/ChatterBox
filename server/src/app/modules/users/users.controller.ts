@@ -22,8 +22,24 @@ const getSingleUser = catchAsync(async (req, res) => {
   });
 });
 
-const updateUser = catchAsync(async (req, res) => {
-  const result = await usersService.updateUserInDB(req.body);
+const updateUserInfo = catchAsync(async (req, res) => {
+  const result = await usersService.updateUserInfoInDB(
+    req.params.uid,
+    req.body,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 201,
+    message: 'User updated successfully',
+    data: result,
+  });
+});
+
+const updateUserPassword = catchAsync(async (req, res) => {
+  const result = await usersService.updateUserPasswordInDB(
+    req.params.uid,
+    req.body,
+  );
   sendResponse(res, {
     success: true,
     status: 201,
@@ -45,6 +61,7 @@ const deleteUser = catchAsync(async (req, res) => {
 export default {
   getSingleUser,
   createUser,
-  updateUser,
+  updateUserInfo,
+  updateUserPassword,
   deleteUser,
 };
