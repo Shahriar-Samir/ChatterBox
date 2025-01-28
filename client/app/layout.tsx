@@ -4,10 +4,17 @@ import { Link } from "@heroui/link";
 import clsx from "clsx";
 
 import { Providers } from "./providers";
-
+import { Kanit } from "next/font/google"; // Import the Kanit font
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+
+// Configure the Kanit font
+const fontKanit = Kanit({
+  subsets: ["latin"],
+  variable: "--font-kanit",
+  weight: ["400", "700"], // Choose weights you need
+});
 
 export const metadata: Metadata = {
   title: {
@@ -37,8 +44,9 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          "min-h-screen bg-background font-sans antialiased from",
-          fontSans.variable
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable,
+          fontKanit.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
