@@ -59,8 +59,8 @@ export default function App() {
   };
 
   return (
-    <main className="w-full h-[100vh] flex flex-col md:gap-20 justify-around items-center">
-      <section className=" flex flex-col items-center md:w-1/2">
+    <main className="w-full h-[100vh] flex flex-col justify-center gap-20 items-center">
+      <section className=" flex justify-center items-center gap-5 w-full">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
           ChatterBox
         </h1>
@@ -68,20 +68,15 @@ export default function App() {
           alt="message bubble"
           height={1000}
           width={1000}
-          className="object-cover w-[200px] h-[200px] md:w-[300px] md:h-[300px] lg:w-[400px] lg:h-[400px]"
+          className="object-cover w-[100px] h-[100px] "
           src="/hero.png"
         />
-        <h1 className="md:text-lg lg:text-xl mt-5 md:mt-10 text-center md:text-start">
-          Where Communication Meets Simplicity
-        </h1>
       </section>
-      <section className="md:w-1/2">
+      <section className="w-full">
         <div className="w-full flex justify-center items-center">
           <ThemeSwitch />
         </div>
-        <h1 className="mt-5 text-2xl md:text-3xl lg:text-4xl font-bold text-center">
-          Create a new account
-        </h1>
+        <h1 className="mt-5 text-2xl text-center">Create a new account</h1>
         <Form
           className="justify-center items-center space-y-4 mt-10"
           validationBehavior="native"
@@ -89,6 +84,38 @@ export default function App() {
           onSubmit={onSubmit}
         >
           <div className="flex flex-col gap-4 !w-full !max-w-[320px]">
+            <Input
+              isRequired
+              errorMessage={({ validationDetails }) => {
+                if (validationDetails.valueMissing) {
+                  return "Please enter your first name";
+                }
+                if (validationDetails.typeMismatch) {
+                  return "Please enter a valid first name";
+                }
+              }}
+              label="First name"
+              labelPlacement="outside"
+              name="firstName"
+              placeholder="Enter your first name"
+              type="text"
+            />
+            <Input
+              isRequired
+              errorMessage={({ validationDetails }) => {
+                if (validationDetails.valueMissing) {
+                  return "Please enter your last name";
+                }
+                if (validationDetails.typeMismatch) {
+                  return "Please enter a valid last name";
+                }
+              }}
+              label="Last name"
+              labelPlacement="outside"
+              name="lastName"
+              placeholder="Enter your last name"
+              type="text"
+            />
             <Input
               isRequired
               errorMessage={({ validationDetails }) => {

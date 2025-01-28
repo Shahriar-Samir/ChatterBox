@@ -79,9 +79,7 @@ export default function App() {
         <div className="w-full flex justify-center items-center">
           <ThemeSwitch />
         </div>
-        <h1 className="mt-5 text-2xl md:text-3xl lg:text-4xl font-bold text-center">
-          Login
-        </h1>
+        <h1 className="mt-5 text-2xl text-center">Login</h1>
         <Form
           className="justify-center items-center space-y-4 mt-10"
           validationBehavior="native"
