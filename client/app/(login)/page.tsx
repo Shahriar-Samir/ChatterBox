@@ -10,11 +10,11 @@ import {
   Button,
 } from "@heroui/react";
 import Image from "next/image";
+import { ThemeSwitch } from "@/components/theme-switch";
 
 export default function App() {
   const [password, setPassword] = React.useState("");
-  const [submitted, setSubmitted] = React.useState(null);
-  const [errors, setErrors] = React.useState({});
+  const [errors, setErrors] = React.useState<any>({});
 
   // Real-time password validation
   const getPasswordError = (value: any) => {
@@ -38,7 +38,7 @@ export default function App() {
     // Custom validation checks
     const newErrors: {
       password?: string;
-      name?: string;
+      email?: string;
     } = {};
 
     // Password validation
@@ -48,31 +48,19 @@ export default function App() {
       newErrors.password = passwordError;
     }
 
-    // Username validation
-    if (data.name === "admin") {
-      newErrors.name = "Nice try! Choose a different username";
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
 
       return;
     }
-
-    if (data.terms !== "true") {
-      setErrors({ terms: "Please accept the terms" });
-
-      return;
-    }
-
     // Clear errors and submit
     setErrors({});
-    setSubmitted(data as any);
+    console.log(data);
   };
 
   return (
-    <main className="w-full h-[100vh] flex flex-col md:flex-row-reverse gap-20 justify-around items-center">
-      <section className=" flex flex-col items-center">
+    <main className="w-full h-[100vh] flex flex-col md:flex-row-reverse md:gap-20 justify-around items-center">
+      <section className=" flex flex-col items-center md:w-1/2">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
           ChatterBox
         </h1>
@@ -87,47 +75,20 @@ export default function App() {
           Where Communication Meets Simplicity
         </h1>
       </section>
-      <section className="">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+      <section className="md:w-1/2">
+        <div className="w-full flex justify-center items-center">
+          <ThemeSwitch />
+        </div>
+        <h1 className="mt-5 text-2xl md:text-3xl lg:text-4xl font-bold text-center">
           Login
         </h1>
         <Form
           className="justify-center items-center space-y-4 mt-10"
           validationBehavior="native"
           validationErrors={errors}
-          onReset={() => setSubmitted(null)}
           onSubmit={onSubmit}
         >
-          <div className="flex flex-col gap-4 max-w-md">
-            <Input
-              isRequired
-              errorMessage={({ validationDetails }) => {
-                if (validationDetails.valueMissing) {
-                  return "Please enter your name";
-                }
-
-                return errors?.name;
-              }}
-              label="First name"
-              labelPlacement="outside"
-              name="name"
-              placeholder="Enter your first Name"
-            />
-            <Input
-              isRequired
-              errorMessage={({ validationDetails }) => {
-                if (validationDetails.valueMissing) {
-                  return "Please enter your name";
-                }
-
-                return errors?.name;
-              }}
-              label="Last name"
-              labelPlacement="outside"
-              name="name"
-              placeholder="Enter your last name"
-            />
-
+          <div className="flex flex-col gap-4 !w-full !max-w-[320px]">
             <Input
               isRequired
               errorMessage={({ validationDetails }) => {
@@ -158,41 +119,23 @@ export default function App() {
               onValueChange={setPassword}
             />
 
-            <Checkbox
-              isRequired
-              classNames={{
-                label: "text-small",
-              }}
-              isInvalid={!!errors.terms}
-              name="terms"
-              validationBehavior="aria"
-              value="true"
-              onValueChange={() =>
-                setErrors((prev) => ({ ...prev, terms: undefined }))
-              }
-            >
-              I agree to the terms and conditions
-            </Checkbox>
-
             {errors?.terms && (
               <span className="text-danger text-small">{errors.terms}</span>
             )}
 
             <div className="flex gap-4">
-              <Button className="w-full" color="primary" type="submit">
-                Submit
+              <Button
+                className="w-full text dark:text-white"
+                color="primary"
+                type="submit"
+              >
+                Login
               </Button>
               <Button type="reset" variant="bordered">
                 Reset
               </Button>
             </div>
           </div>
-
-          {submitted && (
-            <div className="text-small text-default-500 mt-4">
-              Submitted data: <pre>{JSON.stringify(submitted, null, 2)}</pre>
-            </div>
-          )}
         </Form>
       </section>
     </main>
