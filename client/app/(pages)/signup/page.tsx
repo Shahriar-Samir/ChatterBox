@@ -68,7 +68,7 @@ export default function App() {
           alt="message bubble"
           height={1000}
           width={1000}
-          className="object-cover w-[100px] h-[100px] "
+          className="object-cover w-[80px] h-[80px] md:w-[100px] md:h-[100px] "
           src="/hero.png"
         />
       </section>
