@@ -1,14 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Form,
-  Input,
-  Select,
-  SelectItem,
-  Checkbox,
-  Button,
-} from "@heroui/react";
+import { Form, Input, Button } from "@heroui/react";
 import Image from "next/image";
 import { ThemeSwitch } from "@/components/theme-switch";
 
@@ -34,9 +27,12 @@ export default function App() {
   const onSubmit = (e: any) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
+    console.log(data);
 
     // Custom validation checks
     const newErrors: {
+      firstName?: string;
+      lastName?: string;
       password?: string;
       email?: string;
     } = {};
@@ -156,7 +152,7 @@ export default function App() {
                 color="primary"
                 type="submit"
               >
-                Login
+                Create an account
               </Button>
               <Button type="reset" variant="bordered">
                 Reset

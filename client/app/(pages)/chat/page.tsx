@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/chat/chat-bubble";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { BsThreeDots } from "react-icons/bs";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const messages = [
@@ -109,9 +110,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="rounded-xl w-full my-auto">
         <SidebarTrigger />
         <main className="w-full h-full mt-3">
-          <section className="flex flex-col items-center px-5 shadow-md shadow-[#51469960] py-2 rounded-lg gap-2">
+          <section className="flex justify-between items-center px-5 shadow-md shadow-[#51469960] py-2 rounded-lg gap-2">
+            <div className="flex justify-center items-center gap-5">
+              <h2 className="text-xs">Active Status</h2>
+            </div>
             <h1 className="text-md">Arafat Mannan</h1>
-            <h2 className="text-xs">Active Status</h2>
+            <BsThreeDots />
           </section>
           <section className="w-full mt-5">
             <div className="w-full flex flex-col gap-5 h-[70vh] overflow-y-auto">
@@ -144,15 +148,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 );
               })}
             </div>
-            <div className="w-full mt-10 flex justify-between items-center gap-5">
-              <div className="py-3 px-8 shadow-md shadow-[#51469960] rounded-full flex justify-center items-center w-full">
+            <div className="w-full mt-10 flex justify-center items-center gap-5">
+              <div className="py-3 px-8 shadow-md shadow-[#51469960] rounded-full flex justify-center items-center w-1/2">
                 <Textarea
                   placeholder="Write a message ..."
                   className="resize-none border-none !p-0 !h-[20px]"
                 />
               </div>
-              <Button className="!bg-transparent p-0 shadow shadow-[#51469960] rounded-full h-[50px] w-[50px] ">
-                <IoSendSharp className="!text-6xl text-black !dark:white" />
+              <Button className="!bg-transparent p-0 shadow-md hover:shadow-lg hover:border hover:border-[#51469960] hover:shadow-[#51469960] shadow-[#51469960] rounded-full h-[50px] w-[50px] ">
+                <IoSendSharp className="!text-6xl text-commonColor" />
               </Button>
             </div>
           </section>

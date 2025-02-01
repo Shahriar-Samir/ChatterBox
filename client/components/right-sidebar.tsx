@@ -83,9 +83,9 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function RightSideBar() {
   return (
-    <Sidebar>
+    <Sidebar side="right">
       <SidebarContent>
         <SidebarGroup>
           <div className="flex items-center justify-between">
