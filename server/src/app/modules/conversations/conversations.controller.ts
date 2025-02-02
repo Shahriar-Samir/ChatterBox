@@ -2,6 +2,18 @@ import catchAsync from '../../util/catchAsync';
 import sendResponse from '../../util/sendResponse';
 import conversationsService from './conversations.service';
 
+const getAllUserConversation = catchAsync(async (req, res) => {
+  const result = await conversationsService.getAllConversationsFromDB(
+    req.params.uid,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'All user conversations retrieved successfully',
+    data: result,
+  });
+});
+
 const startANewConversation = catchAsync(async (req, res) => {
   const result = await conversationsService.createAConversationIntoDB(req.body);
   sendResponse(res, {
@@ -27,4 +39,5 @@ const removedAConversation = catchAsync(async (req, res) => {
 export default {
   startANewConversation,
   removedAConversation,
+  getAllUserConversation,
 };

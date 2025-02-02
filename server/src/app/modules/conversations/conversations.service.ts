@@ -2,6 +2,15 @@ import IdGenerator from '../../util/IdGenerator';
 import TConversation from './conversations.interface';
 import ConversationModel from './converstations.model';
 
+const getAllConversationsFromDB = async (uid: string) => {
+  const result = await ConversationModel.find({
+    participants: { $elemMatch: { uid } },
+    isDeleted: false,
+  }).sort({ updatedAt: -1 });
+
+  return result;
+};
+
 const createAConversationIntoDB = async (payload: TConversation) => {
   const CId = await IdGenerator('conversation');
   const isConversationExist = await ConversationModel.findOne({
@@ -34,6 +43,7 @@ const removeAConversationFromDB = async (CId: string) => {
 };
 
 export default {
+  getAllConversationsFromDB,
   createAConversationIntoDB,
   removeAConversationFromDB,
 };
