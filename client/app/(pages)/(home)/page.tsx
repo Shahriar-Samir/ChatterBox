@@ -11,6 +11,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { BsThreeDots } from "react-icons/bs";
+import { useAppSelector } from "@/hooks/hooks";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const messages = [

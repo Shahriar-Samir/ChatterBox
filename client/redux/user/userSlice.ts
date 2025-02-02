@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 type TUserState = {
   uid: string | null;
   email: string | null;
-};
+} | null;
 
 const initialState: TUserState = {
-  uid: "",
-  email: "",
+  uid: null,
+  email: null,
 };
 
 const userSlice = createSlice({

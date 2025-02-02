@@ -14,4 +14,10 @@ export type TSendResponseWithCookie = {
   };
 };
 
+export type TSendResponseWithRemovingCookie = {
+  success: boolean;
+  status: number;
+  message: string;
+};
+
 export default TSendResponse;

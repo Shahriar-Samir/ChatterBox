@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./users/userSlice";
+import userReducer from "./user/userSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { chatterBoxApi } from "./api/apiSlice";
 

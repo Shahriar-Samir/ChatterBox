@@ -38,3 +38,30 @@ export const validateAccessTokenWithUID = catchAsync(
     });
   },
 );
+
+export const validateAccessTokenForAuth = catchAsync(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    const token = req.cookies.access_token;
+
+    if (!token) {
+      res.json({
+        success: false,
+        status: 401,
+        message: 'Unauthorized access',
+      });
+    }
+
+    jwt.verify(token, config.secret as string, (err: any, decoded: any) => {
+      if (err) {
+        res.json({
+          success: false,
+          status: 401,
+          message: 'Unauthorized access',
+        });
+      }
+
+      req.user = decoded as JwtPayload;
+      next();
+    });
+  },
+);

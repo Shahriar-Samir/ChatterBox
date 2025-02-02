@@ -32,12 +32,6 @@ const login = async (payload: TLogin) => {
   return { accessToken };
 };
 
-const logout = async (uid: string) => {
-  const result = 'logout';
-  return result;
-};
-
 export default {
   login,
-  logout,
 };

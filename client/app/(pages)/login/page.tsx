@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 
 export default function App() {
   const [login, { isLoading, isError, error }] = useLoginMutation();
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -65,7 +66,7 @@ export default function App() {
     try {
       const result = await login(data).unwrap();
       toast({
-        description: "User logged in successfully",
+        description: result.message,
         duration: 1500,
       });
       router.push("/");

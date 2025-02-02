@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import TSendResponse, {
   TSendResponseWithCookie,
+  TSendResponseWithRemovingCookie,
 } from '../../types/TSendResponse';
 import config from '../config';
 
@@ -30,6 +31,21 @@ export const sendResponseSettingCookies = (
   res
     .status(data.status)
     .cookie('access_token', data?.data?.accessToken, cookieOptions)
+    .json({
+      success: true,
+      status: data.status,
+      message: data.message,
+    })
+    .send();
+};
+
+export const sendResponseRemovingCookies = (
+  res: Response,
+  data: TSendResponseWithRemovingCookie,
+) => {
+  res
+    .status(data.status)
+    .clearCookie('access_token', { maxAge: 0, ...cookieOptions })
     .json({
       success: true,
       status: data.status,

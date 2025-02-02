@@ -3,14 +3,23 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // Define the API service
 export const chatterBoxApi = createApi({
   reducerPath: "chatterBoxApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000/api/v1",
+    credentials: "include",
+  }),
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
         url: "/auth/login",
         method: "POST",
         body: credentials,
-        credentials: "include",
+      }),
+    }),
+    auth: builder.mutation({
+      query: () => ({
+        url: "/auth/userAuth",
+        method: "POST",
+        body: {},
       }),
     }),
     signup: builder.mutation({
@@ -18,10 +27,22 @@ export const chatterBoxApi = createApi({
         url: "/users",
         method: "POST",
         body: credentials,
-        credentials: "include",
+      }),
+    }),
+    logout: builder.mutation({
+      query: (credentials) => ({
+        url: "/auth/logout",
+        method: "POST",
+        body: credentials,
       }),
     }),
   }),
 });
 
-export const { useLoginMutation, useSignupMutation } = chatterBoxApi;
+// Export all hooks
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useAuthMutation,
+  useLogoutMutation,
+} = chatterBoxApi;

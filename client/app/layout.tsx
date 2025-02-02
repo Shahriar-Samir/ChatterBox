@@ -10,6 +10,7 @@ import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import { ReduxProvider } from "@/redux/provider/provider";
 import { Toaster } from "@/components/ui/toaster";
+import AuthProvider from "@/redux/provider/AuthProvider";
 
 // Configure the Kanit font
 const fontKanit = Kanit({
@@ -55,7 +56,9 @@ export default function RootLayout({
           <div className="relative flex flex-col h-screen">
             {/* <Navbar /> */}
             <main className="container mx-auto flex-grow flex justify-center items-center h-[100vh]">
-              <ReduxProvider>{children}</ReduxProvider>
+              <ReduxProvider>
+                <AuthProvider>{children}</AuthProvider>
+              </ReduxProvider>
             </main>
           </div>
           <Toaster />
