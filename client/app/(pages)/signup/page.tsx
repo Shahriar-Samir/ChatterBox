@@ -4,54 +4,71 @@ import React from "react";
 import { Form, Input, Button } from "@heroui/react";
 import Image from "next/image";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { useSignupMutation } from "@/redux/api/apiSlice";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function App() {
+  const [signup, { isLoading, isError, error }] = useSignupMutation();
   const [password, setPassword] = React.useState("");
   const [errors, setErrors] = React.useState<any>({});
+  const router = useRouter();
 
   // Real-time password validation
-  const getPasswordError = (value: any) => {
-    if (value.length < 4) {
-      return "Password must be 4 characters or more";
-    }
-    if ((value.match(/[A-Z]/g) || []).length < 1) {
-      return "Password needs at least 1 uppercase letter";
-    }
-    if ((value.match(/[^a-z]/gi) || []).length < 1) {
-      return "Password needs at least 1 symbol";
-    }
+  // const getPasswordError = (value: any) => {
+  //   if (value.length < 4) {
+  //     return "Password must be 4 characters or more";
+  //   }
+  //   if ((value.match(/[A-Z]/g) || []).length < 1) {
+  //     return "Password needs at least 1 uppercase letter";
+  //   }
+  //   if ((value.match(/[^a-z]/gi) || []).length < 1) {
+  //     return "Password needs at least 1 symbol";
+  //   }
 
-    return null;
-  };
+  //   return null;
+  // };
 
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
-    console.log(data);
 
     // Custom validation checks
-    const newErrors: {
-      firstName?: string;
-      lastName?: string;
-      password?: string;
-      email?: string;
-    } = {};
+    // const newErrors: {
+    //   firstName?: string;
+    //   lastName?: string;
+    //   password?: string;
+    //   email?: string;
+    // } = {};
 
     // Password validation
-    const passwordError = getPasswordError(data.password);
+    // const passwordError = getPasswordError(data.password);
 
-    if (passwordError) {
-      newErrors.password = passwordError;
+    // if (passwordError) {
+    //   newErrors.password = passwordError;
+    // }
+
+    // if (Object.keys(newErrors).length > 0) {
+    //   setErrors(newErrors);
+
+    //   return;
+    // }
+    // // Clear errors and submit
+    // setErrors({});
+    try {
+      const result = await signup(data).unwrap();
+      toast({
+        description: result.message,
+        duration: 1500,
+      });
+      router.push("/");
+    } catch (err: any) {
+      toast({
+        title: err.message,
+        variant: "destructive",
+        duration: 1500,
+      });
     }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-
-      return;
-    }
-    // Clear errors and submit
-    setErrors({});
-    console.log(data);
   };
 
   return (
@@ -131,8 +148,8 @@ export default function App() {
 
             <Input
               isRequired
-              errorMessage={getPasswordError(password)}
-              isInvalid={getPasswordError(password) !== null}
+              // errorMessage={getPasswordError(password)}
+              // isInvalid={getPasswordError(password) !== null}
               label="Password"
               labelPlacement="outside"
               name="password"

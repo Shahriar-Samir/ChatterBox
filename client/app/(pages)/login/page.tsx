@@ -11,27 +11,34 @@ import {
 } from "@heroui/react";
 import Image from "next/image";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { useLoginMutation } from "@/redux/api/apiSlice";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function App() {
+  const [login, { isLoading, isError, error }] = useLoginMutation();
+  const router = useRouter();
+  const { toast } = useToast();
+
   const [password, setPassword] = React.useState("");
   const [errors, setErrors] = React.useState<any>({});
 
   // Real-time password validation
-  const getPasswordError = (value: any) => {
-    if (value.length < 4) {
-      return "Password must be 4 characters or more";
-    }
-    if ((value.match(/[A-Z]/g) || []).length < 1) {
-      return "Password needs at least 1 uppercase letter";
-    }
-    if ((value.match(/[^a-z]/gi) || []).length < 1) {
-      return "Password needs at least 1 symbol";
-    }
+  // const getPasswordError = (value: any) => {
+  //   if (value.length < 4) {
+  //     return "Password must be 4 characters or more";
+  //   }
+  //   if ((value.match(/[A-Z]/g) || []).length < 1) {
+  //     return "Password needs at least 1 uppercase letter";
+  //   }
+  //   if ((value.match(/[^a-z]/gi) || []).length < 1) {
+  //     return "Password needs at least 1 symbol";
+  //   }
 
-    return null;
-  };
+  //   return null;
+  // };
 
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
 
@@ -42,11 +49,11 @@ export default function App() {
     } = {};
 
     // Password validation
-    const passwordError = getPasswordError(data.password);
+    // const passwordError = getPasswordError(data.password);
 
-    if (passwordError) {
-      newErrors.password = passwordError;
-    }
+    // if (passwordError) {
+    //   newErrors.password = passwordError;
+    // }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -55,7 +62,21 @@ export default function App() {
     }
     // Clear errors and submit
     setErrors({});
-    console.log(data);
+    try {
+      const result = await login(data).unwrap();
+      localStorage.setItem("access_token", result.data.accessToken);
+      toast({
+        description: "User logged in successfully",
+        duration: 1500,
+      });
+      router.push("/chat");
+    } catch (err: any) {
+      toast({
+        title: err.data.message,
+        variant: "destructive",
+        duration: 1500,
+      });
+    }
   };
 
   return (
@@ -106,8 +127,8 @@ export default function App() {
 
             <Input
               isRequired
-              errorMessage={getPasswordError(password)}
-              isInvalid={getPasswordError(password) !== null}
+              // errorMessage={getPasswordError(password)}
+              // isInvalid={getPasswordError(password) !== null}
               label="Password"
               labelPlacement="outside"
               name="password"

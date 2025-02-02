@@ -8,6 +8,8 @@ import { Kanit } from "next/font/google"; // Import the Kanit font
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import { ReduxProvider } from "@/redux/provider/provider";
+import { Toaster } from "@/components/ui/toaster";
 
 // Configure the Kanit font
 const fontKanit = Kanit({
@@ -53,9 +55,10 @@ export default function RootLayout({
           <div className="relative flex flex-col h-screen">
             {/* <Navbar /> */}
             <main className="container mx-auto flex-grow flex justify-center items-center h-[100vh]">
-              {children}
+              <ReduxProvider>{children}</ReduxProvider>
             </main>
           </div>
+          <Toaster />
         </Providers>
       </body>
     </html>
