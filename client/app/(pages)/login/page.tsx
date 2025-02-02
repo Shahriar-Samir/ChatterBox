@@ -64,15 +64,14 @@ export default function App() {
     setErrors({});
     try {
       const result = await login(data).unwrap();
-      localStorage.setItem("access_token", result.data.accessToken);
       toast({
         description: "User logged in successfully",
         duration: 1500,
       });
-      router.push("/chat");
+      router.push("/");
     } catch (err: any) {
       toast({
-        title: err.data.message,
+        title: err.message,
         variant: "destructive",
         duration: 1500,
       });

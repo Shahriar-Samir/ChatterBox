@@ -10,6 +10,7 @@ export const chatterBoxApi = createApi({
         url: "/auth/login",
         method: "POST",
         body: credentials,
+        credentials: "include",
       }),
     }),
     signup: builder.mutation({
@@ -17,6 +18,7 @@ export const chatterBoxApi = createApi({
         url: "/users",
         method: "POST",
         body: credentials,
+        credentials: "include",
       }),
     }),
   }),

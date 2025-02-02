@@ -5,4 +5,13 @@ type TSendResponse<T> = {
   data: T;
 };
 
+export type TSendResponseWithCookie = {
+  success: boolean;
+  status: number;
+  message: string;
+  data: {
+    accessToken: string;
+  };
+};
+
 export default TSendResponse;

@@ -8,4 +8,5 @@ export default {
   dbURI: process.env.DB_URI,
   secret: process.env.SECRET,
   saltRounds: parseInt(process.env.SALT_ROUNDS as string),
+  node_env: process.env.NODE_ENV,
 };
