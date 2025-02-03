@@ -1,6 +1,11 @@
 import IdGenerator from '../../util/IdGenerator';
 import MessageModel from './messages.model';
 
+const getAllConversationMessages = async (CId: string) => {
+  const result = await MessageModel.find({ CId }).sort({ createdAt: 1 });
+  return result;
+};
+
 const createAMessageIntoDB = async (payload: TMessages) => {
   const MId = await IdGenerator('message');
   payload.MId = MId as string;
@@ -33,6 +38,7 @@ const removeAMessageForSenderIntoDB = async (MId: string) => {
 };
 
 export default {
+  getAllConversationMessages,
   createAMessageIntoDB,
   removeAMessageForAllIntoDB,
   removeAMessageForSenderIntoDB,

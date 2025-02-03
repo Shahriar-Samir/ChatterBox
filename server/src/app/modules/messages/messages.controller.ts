@@ -2,6 +2,18 @@ import catchAsync from '../../util/catchAsync';
 import sendResponse from '../../util/sendResponse';
 import messagesService from './messages.service';
 
+const getAllConversationMessages = catchAsync(async (req, res) => {
+  const result = await messagesService.getAllConversationMessages(
+    req.params.cid,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'All conversations messages retrieved successfully',
+    data: result,
+  });
+});
+
 const sendMessage = catchAsync(async (req, res) => {
   const result = await messagesService.createAMessageIntoDB(req.body);
   sendResponse(res, {
@@ -50,6 +62,7 @@ const removeAMessageForSender = catchAsync(async (req, res) => {
 });
 
 export default {
+  getAllConversationMessages,
   sendMessage,
   removeAMessageForAll,
   removeAMessageForSender,
