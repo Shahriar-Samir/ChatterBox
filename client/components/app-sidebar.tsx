@@ -1,3 +1,5 @@
+"use client";
+
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import { IoIosSearch } from "react-icons/io";
 
@@ -18,9 +20,13 @@ import LogoutModal from "./logoutModal";
 import { Input } from "@heroui/input";
 import { TbEdit } from "react-icons/tb";
 import { IoIosSettings } from "react-icons/io";
+import { useGetUserConversationsMutation } from "@/redux/api/apiSlice";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useAppSelector } from "@/hooks/hooks";
 
 // Menu items.
-const items = [
+let items = [
   {
     title: "Home",
     url: "#",
@@ -84,6 +90,22 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const [getConversations, { data, isLoading, isError }] =
+    useGetUserConversationsMutation();
+  const [conversations, setConversations] = useState<any>([]);
+
+  const currentUser = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    const getAllConversations = async (uid: string) => {
+      const conversationsData = await getConversations(uid);
+      setConversations(conversationsData.data.data);
+    };
+    if (currentUser.uid) {
+      getAllConversations(currentUser.uid);
+    }
+  }, [currentUser]);
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -116,24 +138,28 @@ export function AppSidebar() {
               type="search"
             />
             <SidebarMenu className="flex gap-10 h-[70vh] overflow-y-auto mt-5">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title} className="">
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="">
-                      {/* <item.icon />
-                       */}
-                      <Image
-                        width={100}
-                        height={100}
-                        alt="user"
-                        src=""
-                        className="border rounded-full w-[50px] h-[50px]"
-                      />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {conversations.length > 0 ? (
+                conversations.map((con: any) => (
+                  <SidebarMenuItem key={con.name} className="">
+                    <SidebarMenuButton asChild>
+                      <a href={con.name} className="">
+                        {/* <item.icon />
+                         */}
+                        <Image
+                          width={100}
+                          height={100}
+                          alt="user"
+                          src=""
+                          className="border rounded-full w-[50px] h-[50px]"
+                        />
+                        <span>{con.name}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))
+              ) : (
+                <h1>No conversations available</h1>
+              )}
             </SidebarMenu>
             <div className="mt-5 flex justify-center items-center gap-5">
               <h1>Theme</h1>

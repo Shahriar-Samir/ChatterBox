@@ -11,8 +11,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.user);
 
-  console.log(currentUser);
-
   useEffect(() => {
     if (currentUser.uid && currentUser.email) {
       return;
