@@ -42,6 +42,12 @@ export const chatterBoxApi = createApi({
         method: "GET",
       }),
     }),
+    getConversationMessages: builder.mutation({
+      query: (cid) => ({
+        url: `/messages/${cid}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -52,4 +58,5 @@ export const {
   useAuthMutation,
   useLogoutMutation,
   useGetUserConversationsMutation,
+  useGetConversationMessagesMutation,
 } = chatterBoxApi;
