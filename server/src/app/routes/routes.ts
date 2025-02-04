@@ -4,6 +4,7 @@ import authRoutes from '../modules/auth/auth.route';
 import messagesRoutes from '../modules/messages/messages.route';
 import usersRoutes from '../modules/users/users.route';
 import conversationRoutes from '../modules/conversations/conversations.route';
+import searchRoutes from '../modules/search/search.route';
 
 const router = express.Router();
 
@@ -23,6 +24,10 @@ const routes = [
   {
     path: '/conversations',
     route: conversationRoutes,
+  },
+  {
+    path: '/search',
+    route: searchRoutes,
   },
 ];
 
