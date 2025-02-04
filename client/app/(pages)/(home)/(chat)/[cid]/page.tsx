@@ -13,7 +13,10 @@ import { BsThreeDots } from "react-icons/bs";
 import { useAppSelector } from "@/hooks/hooks";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
-import { useGetConversationMessagesMutation } from "@/redux/api/apiSlice";
+import {
+  useGetConversationMessagesMutation,
+  useGetSingleConversationMutation,
+} from "@/redux/api/apiSlice";
 import MessageInputs from "@/components/ChatPage/SendMessage";
 import MessageOptions from "@/components/ChatPage/MessageOptions";
 
@@ -22,18 +25,30 @@ export default function Chat() {
 
   const [getConversationMessages, { data, isLoading, isError }] =
     useGetConversationMessagesMutation();
+  const [getSingleConversation, { isLoading: isLoadingForSingleConversation }] =
+    useGetSingleConversationMutation();
   const [messages, setMessages] = useState<any>([]);
+  const [conversationDetails, setConversationDetails] = useState<any>([]);
 
   useEffect(() => {
+    const getConversationDetails = async () => {
+      try {
+        const response = await getSingleConversation(cid);
+        setConversationDetails(response.data.data);
+        // setConversationDetails(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
     const getAllMessages = async () => {
       try {
         const response = await getConversationMessages(cid);
-        console.log(response.data.data);
         setMessages(response.data.data);
       } catch (error) {
         console.error(error);
       }
     };
+    getConversationDetails();
     getAllMessages();
   }, [cid]);
 
@@ -46,7 +61,7 @@ export default function Chat() {
           <div className="flex justify-center items-center gap-5">
             <h2 className="text-xs">Active Status</h2>
           </div>
-          <h1 className="text-md">Arafat Mannan</h1>
+          <h1 className="text-md">{conversationDetails?.name ? conversationDetails.name : conversationDetails. }</h1>
           <BsThreeDots />
         </section>
         <section className="w-full mt-5">

@@ -38,7 +38,7 @@ export const chatterBoxApi = createApi({
     }),
     getUserConversations: builder.mutation({
       query: (uid) => ({
-        url: `/conversations/${uid}`,
+        url: `/conversations/allUserConversations/${uid}`,
         method: "GET",
       }),
     }),
@@ -68,8 +68,21 @@ export const chatterBoxApi = createApi({
       }),
     }),
     search: builder.mutation({
-      query: (searchTerm) => ({
-        url: `/search?searchTerm=${searchTerm}`,
+      query: (params) => ({
+        url: `/search?searchTerm=${params.searchTerm}&uid=${params.uid}`,
+        method: "GET",
+      }),
+    }),
+    startConversation: builder.mutation({
+      query: (credentials) => ({
+        url: `/conversations`,
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+    getSingleConversation: builder.mutation({
+      query: (CId) => ({
+        url: `/conversations/singleConversation/${CId}`,
         method: "GET",
       }),
     }),
@@ -88,4 +101,6 @@ export const {
   useRemoveMessageFromAllMutation,
   useRemoveMessageFromYouMutation,
   useSearchMutation,
+  useStartConversationMutation,
+  useGetSingleConversationMutation,
 } = chatterBoxApi;

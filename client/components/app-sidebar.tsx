@@ -42,8 +42,12 @@ export function AppSidebar() {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setSearchTerm(value);
-    router.push(`/search/${encodeURIComponent(value)}`);
+    if (value.length > 0) {
+      setSearchTerm(value);
+      router.push(`/search/${encodeURIComponent(value)}`);
+    } else {
+      router.push("/chat");
+    }
   };
 
   return (
@@ -75,22 +79,38 @@ export function AppSidebar() {
             />
             <SidebarMenu className="flex gap-10 h-[70vh] overflow-y-auto mt-5">
               {conversations.length > 0 ? (
-                conversations.map((con: any) => (
-                  <SidebarMenuItem key={con.name}>
-                    <SidebarMenuButton asChild>
-                      <a href={con.CId}>
-                        <Image
-                          width={50}
-                          height={50}
-                          alt="user"
-                          src="/user-placeholder.png"
-                          className="border rounded-full w-[50px] h-[50px]"
-                        />
-                        <span>{con.name}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))
+                conversations.map((con: any) => {
+                  const inboxUser = con.participants.filter((participant) => {
+                    return participant.uid !== currentUser.uid;
+                  });
+                  console.log(inboxUser);
+                  return (
+                    <SidebarMenuItem
+                      key={
+                        con.type === "group"
+                          ? con.name
+                          : `${inboxUser[0].firstName} ${inboxUser[0].lastName}`
+                      }
+                    >
+                      <SidebarMenuButton asChild>
+                        <a href={con.CId}>
+                          <Image
+                            width={50}
+                            height={50}
+                            alt="user"
+                            src="/user-placeholder.png"
+                            className="border rounded-full w-[50px] h-[50px]"
+                          />
+                          <span>
+                            {con.type === "group"
+                              ? con.name
+                              : `${inboxUser[0].firstName} ${inboxUser[0].lastName}`}
+                          </span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })
               ) : (
                 <h1>No conversations available</h1>
               )}

@@ -12,19 +12,31 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const currentUser = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (currentUser.uid && currentUser.email) {
+    if (
+      currentUser.uid &&
+      currentUser.email &&
+      currentUser.firstName &&
+      currentUser.lastName
+    ) {
       return;
     }
 
     const authenticateUser = async () => {
       const response = await auth({}).unwrap();
-      console.log(response);
+      console.log(response, "res");
       if (response.message == "Unauthorized access") {
         await logout({}).unwrap();
-        dispatch(setUser({ uid: null, email: null }));
+        dispatch(
+          setUser({ uid: null, email: null, firstName: null, lastName: null })
+        );
       } else {
         dispatch(
-          setUser({ uid: response.data.uid, email: response.data.email })
+          setUser({
+            uid: response.data.uid,
+            email: response.data.email,
+            firstName: response.data.firstName,
+            lastName: response.data.lastName,
+          })
         );
       }
     };
