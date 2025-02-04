@@ -76,7 +76,7 @@ module.exports = {
       },
     },
   },
-  darkMode: ["class", "class"], // Enable dark mode using class
+  darkMode: "class", // Enable dark mode using class
   plugins: [
     heroui({
       themes: {

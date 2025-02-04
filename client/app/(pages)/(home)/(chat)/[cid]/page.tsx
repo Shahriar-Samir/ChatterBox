@@ -9,13 +9,13 @@ import {
   ChatBubbleAvatar,
   ChatBubbleMessage,
 } from "@/components/ui/chat/chat-bubble";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { BsThreeDots } from "react-icons/bs";
 import { useAppSelector } from "@/hooks/hooks";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { useGetConversationMessagesMutation } from "@/redux/api/apiSlice";
+import MessageInputs from "@/components/ChatPage/SendMessage";
+import MessageOptions from "@/components/ChatPage/MessageOptions";
 
 export default function Chat() {
   const { cid } = useParams();
@@ -50,19 +50,40 @@ export default function Chat() {
           <BsThreeDots />
         </section>
         <section className="w-full mt-5">
-          <div className="w-full flex flex-col gap-5 h-[70vh] overflow-y-auto">
+          <div className="w-full flex flex-col gap-5 h-[70vh] overflow-y-auto pb-3">
             {messages.length > 0 ? (
               messages.map((messageData: any) => {
                 const variant =
                   messageData.senderId === user.uid ? "sent" : "received";
+                console.log(variant);
                 return (
-                  <ChatBubble key={messageData.MId} variant={variant}>
+                  <ChatBubble
+                    key={messageData.MId}
+                    variant={variant}
+                    className="gap-4"
+                  >
                     <ChatBubbleAvatar
                       fallback={variant === "sent" ? "US" : "AI"}
                     />
-                    <ChatBubbleMessage isLoading={false}>
-                      {messageData.content}
-                    </ChatBubbleMessage>
+                    {variant === "sent" && messageData.isDeletedForSender ? (
+                      <ChatBubbleMessage
+                        className="dark:bg-[#b6b6b6] bg-[#eeeeee]"
+                        isLoading={false}
+                      >
+                        message unsent
+                      </ChatBubbleMessage>
+                    ) : (
+                      <ChatBubbleMessage
+                        className={
+                          variant === "sent"
+                            ? "bg-gradient-to-r from-commonColor to-[#655ba8] dark:from-commonColor dark:to-transparent dark:bg-transparent dark:text-white shadow-md shadow-commonColor  transition-all hover:translate-x-1"
+                            : "transition-all hover:translate-x-[-5px]"
+                        }
+                        isLoading={false}
+                      >
+                        {messageData.content}
+                      </ChatBubbleMessage>
+                    )}
                     {/* Action Icons */}
                     <ChatBubbleActionWrapper>
                       {[].map(({ icon: Icon, type }) => (
@@ -77,6 +98,7 @@ export default function Chat() {
                           }
                         />
                       ))}
+                      <MessageOptions MId={messageData.MId} />
                     </ChatBubbleActionWrapper>
                   </ChatBubble>
                 );
@@ -85,17 +107,7 @@ export default function Chat() {
               <p>loading</p>
             )}
           </div>
-          <div className="w-full mt-10 flex justify-center items-center gap-5">
-            <div className="py-3 px-8 shadow-md shadow-[#51469960] rounded-full flex justify-center items-center w-1/2">
-              <Textarea
-                placeholder="Write a message ..."
-                className="resize-none border-none !p-0 !h-[20px]"
-              />
-            </div>
-            <Button className="!bg-transparent p-0 shadow-md hover:shadow-lg hover:border hover:border-[#51469960] hover:shadow-[#51469960] shadow-[#51469960] rounded-full h-[50px] w-[50px] ">
-              <IoSendSharp className="!text-6xl text-commonColor" />
-            </Button>
-          </div>
+          <MessageInputs senderId={user.uid as string} CId={cid as string} />
         </section>
       </main>
     </main>

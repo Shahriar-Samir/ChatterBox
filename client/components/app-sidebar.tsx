@@ -25,70 +25,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useAppSelector } from "@/hooks/hooks";
 
-// Menu items.
-let items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
-
 export function AppSidebar() {
   const [getConversations, { data, isLoading, isError }] =
     useGetUserConversationsMutation();
@@ -142,7 +78,7 @@ export function AppSidebar() {
                 conversations.map((con: any) => (
                   <SidebarMenuItem key={con.name} className="">
                     <SidebarMenuButton asChild>
-                      <a href={con.name} className="">
+                      <a href={con.CId} className="">
                         {/* <item.icon />
                          */}
                         <Image

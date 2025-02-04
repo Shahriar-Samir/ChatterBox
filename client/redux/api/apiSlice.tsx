@@ -48,6 +48,25 @@ export const chatterBoxApi = createApi({
         method: "GET",
       }),
     }),
+    sendMessage: builder.mutation({
+      query: (messageData) => ({
+        url: `/messages/`,
+        method: "POST",
+        body: messageData,
+      }),
+    }),
+    removeMessageFromAll: builder.mutation({
+      query: (MId) => ({
+        url: `/messages/removeForAll/${MId}`,
+        method: "DELETE",
+      }),
+    }),
+    removeMessageFromYou: builder.mutation({
+      query: (MId) => ({
+        url: `/messages/removeForSender/${MId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -59,4 +78,7 @@ export const {
   useLogoutMutation,
   useGetUserConversationsMutation,
   useGetConversationMessagesMutation,
+  useSendMessageMutation,
+  useRemoveMessageFromAllMutation,
+  useRemoveMessageFromYouMutation,
 } = chatterBoxApi;
