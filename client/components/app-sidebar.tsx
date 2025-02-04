@@ -1,46 +1,50 @@
 "use client";
 
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
-
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ThemeSwitch } from "./theme-switch";
 import Image from "next/image";
-import { Button } from "@heroui/button";
 import LogoutModal from "./logoutModal";
 import { Input } from "@heroui/input";
 import { TbEdit } from "react-icons/tb";
 import { IoIosSettings } from "react-icons/io";
 import { useGetUserConversationsMutation } from "@/redux/api/apiSlice";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useAppSelector } from "@/hooks/hooks";
 
 export function AppSidebar() {
-  const [getConversations, { data, isLoading, isError }] =
-    useGetUserConversationsMutation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [getConversations, { data }] = useGetUserConversationsMutation();
   const [conversations, setConversations] = useState<any>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const currentUser = useAppSelector((state) => state.user);
 
   useEffect(() => {
     const getAllConversations = async (uid: string) => {
       const conversationsData = await getConversations(uid);
-      setConversations(conversationsData.data.data);
+      setConversations(conversationsData.data.data || []);
     };
     if (currentUser.uid) {
       getAllConversations(currentUser.uid);
     }
-  }, [currentUser]);
+  }, [currentUser, getConversations]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    router.push(`/search/${encodeURIComponent(value)}`);
+  };
 
   return (
     <Sidebar>
@@ -48,13 +52,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <div className="flex items-center justify-between">
             <div className="flex justify-center items-center gap-1">
-              <Image
-                height={100}
-                width={100}
-                alt="logo"
-                className="h-[50px] w-[50px]"
-                src="/hero.png"
-              />
+              <Image height={50} width={50} alt="logo" src="/hero.png" />
               <h1>ChatterBox</h1>
             </div>
             <TbEdit className="text-xl" />
@@ -72,20 +70,20 @@ export function AppSidebar() {
               size="sm"
               startContent={<IoIosSearch />}
               type="search"
+              value={searchTerm}
+              onChange={handleSearchChange}
             />
             <SidebarMenu className="flex gap-10 h-[70vh] overflow-y-auto mt-5">
               {conversations.length > 0 ? (
                 conversations.map((con: any) => (
-                  <SidebarMenuItem key={con.name} className="">
+                  <SidebarMenuItem key={con.name}>
                     <SidebarMenuButton asChild>
-                      <a href={con.CId} className="">
-                        {/* <item.icon />
-                         */}
+                      <a href={con.CId}>
                         <Image
-                          width={100}
-                          height={100}
+                          width={50}
+                          height={50}
                           alt="user"
-                          src=""
+                          src="/user-placeholder.png"
                           className="border rounded-full w-[50px] h-[50px]"
                         />
                         <span>{con.name}</span>
@@ -105,7 +103,6 @@ export function AppSidebar() {
               <h1>Settings</h1>
               <IoIosSettings />
             </div>
-            <div></div>
             <div className="flex justify-center mt-4">
               <LogoutModal />
             </div>

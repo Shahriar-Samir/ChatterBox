@@ -21,6 +21,7 @@ export default function MessageInputs({
 
     try {
       const payload = { content: message, CId, senderId };
+      setMessage("");
       const res = await sendMessage(payload);
       console.log(res);
       setMessage("");

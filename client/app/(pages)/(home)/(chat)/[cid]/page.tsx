@@ -67,7 +67,7 @@ export default function Chat() {
                     />
                     {variant === "sent" && messageData.isDeletedForSender ? (
                       <ChatBubbleMessage
-                        className="dark:bg-[#b6b6b6] bg-[#eeeeee]"
+                        className="border border-gray-200 dark:border-gray-700 text-sm text-black dark:text-white bg-transparent"
                         isLoading={false}
                       >
                         message unsent
@@ -98,7 +98,12 @@ export default function Chat() {
                           }
                         />
                       ))}
-                      <MessageOptions MId={messageData.MId} />
+                      {messageData.isDeletedForSender ||
+                      messageData.isDeletedForAll ? (
+                        ""
+                      ) : (
+                        <MessageOptions MId={messageData.MId} />
+                      )}
                     </ChatBubbleActionWrapper>
                   </ChatBubble>
                 );

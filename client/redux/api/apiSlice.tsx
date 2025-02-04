@@ -67,6 +67,12 @@ export const chatterBoxApi = createApi({
         method: "DELETE",
       }),
     }),
+    search: builder.mutation({
+      query: (searchTerm) => ({
+        url: `/search?searchTerm=${searchTerm}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -81,4 +87,5 @@ export const {
   useSendMessageMutation,
   useRemoveMessageFromAllMutation,
   useRemoveMessageFromYouMutation,
+  useSearchMutation,
 } = chatterBoxApi;

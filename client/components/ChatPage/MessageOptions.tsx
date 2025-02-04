@@ -105,7 +105,8 @@ export default function MessageOptions({ MId }: MessageOptionsProps) {
                 <Button
                   color="primary"
                   onPress={async () => {
-                    await deleteMessage(); // Ensure the deletion is completed before closing
+                    await deleteMessage();
+                    onClose();
                   }}
                   isLoading={isLoading1 || isLoading2} // Show loading state while deleting
                 >
