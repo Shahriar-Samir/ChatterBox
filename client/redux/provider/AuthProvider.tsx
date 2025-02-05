@@ -23,7 +23,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const authenticateUser = async () => {
       const response = await auth({}).unwrap();
-      console.log(response, "res");
       if (response.message == "Unauthorized access") {
         await logout({}).unwrap();
         dispatch(
