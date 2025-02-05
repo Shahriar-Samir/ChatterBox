@@ -13,22 +13,35 @@ const io = new Server(server, {
   },
 });
 
-const userSocketMap = {};
+const userSocketMap: Record<string, string[]> = {};
+
+export const getSocketIds = (CId: string): string[] => {
+  return userSocketMap[CId] || [];
+};
 
 io.on('connection', (socket) => {
   console.log('A User connected', socket.id);
 
-  const uid = socket.handshake.query.uid;
+  const { uid, CId } = socket.handshake.query;
 
-  if (uid != 'undefined') {
-    userSocketMap[uid] = socket.id;
+  if (uid && uid !== 'undefined' && CId) {
+    if (!userSocketMap[CId]) {
+      userSocketMap[CId] = [];
+    }
+    userSocketMap[CId].push(socket.id);
+    socket.join(CId);
   }
 
   io.emit('getActiveUsers', Object.keys(userSocketMap));
 
   socket.on('disconnect', () => {
     console.log('A User disconnected', socket.id);
-    delete userSocketMap[uid];
+    if (CId && userSocketMap[CId]) {
+      userSocketMap[CId] = userSocketMap[CId].filter((id) => id !== socket.id);
+      if (userSocketMap[CId].length === 0) {
+        delete userSocketMap[CId];
+      }
+    }
     io.emit('getActiveUsers', Object.keys(userSocketMap));
   });
 });
