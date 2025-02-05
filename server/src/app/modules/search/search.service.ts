@@ -1,6 +1,6 @@
 import UserModel from '../users/users.model';
 
-const searchUsersAndGroupsFromDB = async (searchTerm: string) => {
+const searchUsersAndGroupsFromDB = async (searchTerm: string, uid: string) => {
   const splitedSearchTerm = searchTerm.trim().split(' ');
 
   const firstNameSearchTerm = splitedSearchTerm[0] || '';
@@ -9,6 +9,7 @@ const searchUsersAndGroupsFromDB = async (searchTerm: string) => {
   const regexPattern = (term: string) => new RegExp(`.*${term}.*`, 'i');
 
   const users = await UserModel.find({
+    uid: { $ne: uid },
     $or: [
       {
         firstName: { $regex: regexPattern(firstNameSearchTerm) },

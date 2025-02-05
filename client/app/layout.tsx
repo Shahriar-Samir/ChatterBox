@@ -11,6 +11,7 @@ import { Navbar } from "@/components/navbar";
 import { ReduxProvider } from "@/redux/provider/provider";
 import { Toaster } from "@/components/ui/toaster";
 import AuthProvider from "@/redux/provider/AuthProvider";
+import SocketContextProvider from "@/redux/provider/SocketProvider";
 
 // Configure the Kanit font
 const fontKanit = Kanit({
@@ -57,7 +58,9 @@ export default function RootLayout({
             {/* <Navbar /> */}
             <main className="container mx-auto flex-grow flex justify-center items-center h-[100vh]">
               <ReduxProvider>
-                <AuthProvider>{children}</AuthProvider>
+                <AuthProvider>
+                  <SocketContextProvider>{children}</SocketContextProvider>
+                </AuthProvider>
               </ReduxProvider>
             </main>
           </div>

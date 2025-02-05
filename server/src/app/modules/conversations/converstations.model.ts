@@ -6,14 +6,27 @@ const participantSchema = new Schema<TParticipant>({
     type: String,
     required: true,
   },
-  joinedAt: {
+  firstName: {
     type: String,
     required: true,
   },
-  lastReadMessageId: {
+  lastName: {
     type: String,
     required: true,
+  },
+  joinedAt: {
+    type: String,
+    default: new Date().toISOString(),
+  },
+  lastReadMessageId: {
+    type: String,
     default: null,
+  },
+  conStatus: {
+    type: String,
+    required: true,
+    enum: ['accepted', 'pending', 'rejected'],
+    default: 'pending',
   },
 });
 

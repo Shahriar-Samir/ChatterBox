@@ -14,6 +14,18 @@ const getAllUserConversation = catchAsync(async (req, res) => {
   });
 });
 
+const getSingleUserConversation = catchAsync(async (req, res) => {
+  const result = await conversationsService.getSingleConversationsFromDB(
+    req.params.cid,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'All user conversations retrieved successfully',
+    data: result,
+  });
+});
+
 const startANewConversation = catchAsync(async (req, res) => {
   const result = await conversationsService.createAConversationIntoDB(req.body);
   sendResponse(res, {
@@ -40,4 +52,5 @@ export default {
   startANewConversation,
   removedAConversation,
   getAllUserConversation,
+  getSingleUserConversation,
 };

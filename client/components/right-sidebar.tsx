@@ -126,7 +126,7 @@ export function RightSideBar() {
                         width={100}
                         height={100}
                         alt="user"
-                        src=""
+                        src="/hero.png"
                         className="border rounded-full w-[50px] h-[50px]"
                       />
                       <span>{item.title}</span>

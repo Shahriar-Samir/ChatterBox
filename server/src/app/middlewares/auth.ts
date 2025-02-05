@@ -59,7 +59,6 @@ export const validateAccessTokenForAuth = catchAsync(
           message: 'Unauthorized access',
         });
       }
-
       req.user = decoded as JwtPayload;
       next();
     });

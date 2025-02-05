@@ -1,7 +1,10 @@
 export type TParticipant = {
   uid: string;
+  firstName: string;
+  lastName: string;
   joinedAt: string;
   lastReadMessageId: string;
+  conStatus: 'accepted' | 'pending' | 'blocked';
 };
 
 type TConversation = {

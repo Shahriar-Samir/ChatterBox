@@ -5,13 +5,19 @@ import { validateAccessTokenWithUID } from '../../middlewares/auth';
 const router = express.Router();
 
 router.get(
-  '/:uid',
-  validateAccessTokenWithUID,
+  '/allUserConversations/:uid',
+  // validateAccessTokenWithUID,
   conversationsController.getAllUserConversation,
+);
+
+router.get(
+  '/singleConversation/:cid',
+  // validateAccessTokenWithUID,
+  conversationsController.getSingleUserConversation,
 );
 router.post(
   '/',
-  validateAccessTokenWithUID,
+  // validateAccessTokenWithUID,
   conversationsController.startANewConversation,
 );
 router.delete(

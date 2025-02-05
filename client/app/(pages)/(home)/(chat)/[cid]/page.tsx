@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { IoSendSharp, IoVideocam } from "react-icons/io5";
+import { GoDot, GoDotFill } from "react-icons/go";
 import {
   ChatBubble,
   ChatBubbleAction,
@@ -40,6 +41,8 @@ export default function Chat() {
   const [conversationDetails, setConversationDetails] = useState<any>([]);
   const [inboxUser, setInboxUser] = useState<any>("loading");
   const currentUser = useAppSelector((state) => state.user);
+  const [isActive, setIsActive] = useState<boolean>(false);
+  const activeUsers = useAppSelector((state) => state.activeUsers);
 
   useEffect(() => {
     const getConversationDetails = async () => {
@@ -55,6 +58,8 @@ export default function Chat() {
           setInboxUser("loading");
         } else {
           setInboxUser(inboxUser[0]);
+          const userActive = activeUsers.users.includes(inboxUser[0].uid);
+          setIsActive(userActive);
         }
       } catch (error) {
         console.error(error);
@@ -70,9 +75,10 @@ export default function Chat() {
     };
     getConversationDetails();
     getAllMessages();
-  }, [cid, currentUser]);
+  }, [cid, currentUser, activeUsers]);
 
   const user = useAppSelector((state) => state.user);
+
   return (
     <main className="rounded-xl w-full my-auto">
       <SidebarTrigger />
@@ -83,7 +89,7 @@ export default function Chat() {
               height={500}
               width={500}
               className="w-[45px] h-[45px] rounded-full"
-              src=""
+              src="/hero.png"
               alt=""
             />
             <div className="flex flex-col gap-1">
@@ -94,7 +100,13 @@ export default function Chat() {
                     ? `${inboxUser?.firstName} ${inboxUser.lastName}`
                     : ""}
               </h1>
-              <h2 className="text-xs">Active Status</h2>
+              {isActive ? (
+                <h2 className="text-sm flex items-center gap-1">
+                  Active <GoDotFill className="text-green-500" />
+                </h2>
+              ) : (
+                <h2 className="text-sm flex items-center gap-1">Offline</h2>
+              )}
             </div>
           </div>
 
@@ -110,7 +122,6 @@ export default function Chat() {
               messages.map((messageData: any) => {
                 const variant = messageData.variant;
                 messageData.senderId === user.uid ? "sent" : "received";
-                console.log(variant, " sdfs");
                 return (
                   <ChatBubble
                     key={messageData.MId}

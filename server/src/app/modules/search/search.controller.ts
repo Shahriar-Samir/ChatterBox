@@ -5,6 +5,7 @@ import searchService from './search.service';
 const searchUsersAndGroups = catchAsync(async (req, res) => {
   const result = await searchService.searchUsersAndGroupsFromDB(
     req.query.searchTerm as string,
+    req.query.uid as string,
   );
   sendResponse(res, {
     success: true,
