@@ -49,8 +49,8 @@ export const chatterBoxApi = createApi({
       }),
     }),
     sendMessage: builder.mutation({
-      query: (messageData) => ({
-        url: `/messages/`,
+      query: ({ messageData, receiverId }) => ({
+        url: `/messages?receiverId=${receiverId}`,
         method: "POST",
         body: messageData,
       }),
@@ -80,6 +80,12 @@ export const chatterBoxApi = createApi({
         body: credentials,
       }),
     }),
+    updateMidOfConversation: builder.mutation({
+      query: (params) => ({
+        url: `/conversations/updateMIdOfConversation?CID=${params.CID}&MId=${params.MId}&receiverId=${params.receiverId}`,
+        method: "PATCH",
+      }),
+    }),
     getSingleConversation: builder.mutation({
       query: (CId) => ({
         url: `/conversations/singleConversation/${CId}`,
@@ -103,4 +109,5 @@ export const {
   useSearchMutation,
   useStartConversationMutation,
   useGetSingleConversationMutation,
+  useUpdateMidOfConversationMutation,
 } = chatterBoxApi;

@@ -20,6 +20,12 @@ router.post(
   // validateAccessTokenWithUID,
   conversationsController.startANewConversation,
 );
+
+router.patch(
+  '/updateMIdOfConversation',
+  // validateAccessTokenWithUID,
+  conversationsController.updateMIDofConversation,
+);
 router.delete(
   '/:cid',
   validateAccessTokenWithUID,

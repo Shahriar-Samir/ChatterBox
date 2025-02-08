@@ -15,6 +15,7 @@ type TConversation = {
   createdAt: String;
   updatedAt: String;
   isDeleted: false;
+  lastMessageId: string,
 };
 
 export default TConversation;

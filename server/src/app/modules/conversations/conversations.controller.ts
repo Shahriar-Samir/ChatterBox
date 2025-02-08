@@ -36,6 +36,21 @@ const startANewConversation = catchAsync(async (req, res) => {
   });
 });
 
+const updateMIDofConversation = catchAsync(async (req, res) => {
+  const result = await conversationsService.updateLastMessageIdOfConversation(
+    req.query.CID as string,
+    req.query.MId as string,
+    req.query.receiverId as string,
+  );
+
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'Conversation MId updated successfully',
+    data: result,
+  });
+});
+
 const removedAConversation = catchAsync(async (req, res) => {
   const result = await conversationsService.removeAConversationFromDB(
     req.params.cid,
@@ -53,4 +68,5 @@ export default {
   removedAConversation,
   getAllUserConversation,
   getSingleUserConversation,
+  updateMIDofConversation,
 };

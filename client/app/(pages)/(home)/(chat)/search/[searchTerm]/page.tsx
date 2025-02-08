@@ -62,7 +62,7 @@ export default function Search() {
       };
 
       const result = await startConversation(payload);
-      console.log(result);
+      console.log(result, "resutl");
       router.push(`/${result.data.data.CId}`);
     } catch (err) {
       console.error(err);

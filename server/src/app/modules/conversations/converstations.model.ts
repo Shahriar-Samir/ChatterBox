@@ -39,6 +39,10 @@ const conversationSchema = new Schema<TConversation>(
     name: {
       type: String,
     },
+    lastMessageId: {
+      type: String,
+      default: null,
+    },
     participants: {
       type: [participantSchema],
       length: 10,

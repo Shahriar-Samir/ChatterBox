@@ -15,12 +15,15 @@ const getAllConversationMessages = catchAsync(async (req, res) => {
 });
 
 const sendMessage = catchAsync(async (req, res) => {
-  await messagesService.createAMessageIntoDB(req.body);
+  const result = await messagesService.createAMessageIntoDB(
+    req.body,
+    req.query.receiverId as string,
+  );
   sendResponse(res, {
     success: true,
     status: 200,
     message: 'Message sent successfully',
-    data: null,
+    data: result,
   });
 });
 

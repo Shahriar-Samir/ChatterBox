@@ -18,14 +18,16 @@ import { Input } from "@heroui/input";
 import { TbEdit } from "react-icons/tb";
 import { IoIosSettings } from "react-icons/io";
 import { useGetUserConversationsMutation } from "@/redux/api/apiSlice";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/hooks";
+import { SocketContext } from "@/redux/provider/SocketProvider";
 
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { conversations, setConversations } = useContext<any>(SocketContext);
   const [getConversations, { data }] = useGetUserConversationsMutation();
-  const [conversations, setConversations] = useState<any>([]);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const currentUser = useAppSelector((state) => state.user);

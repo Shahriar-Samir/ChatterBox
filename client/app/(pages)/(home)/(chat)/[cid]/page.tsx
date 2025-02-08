@@ -13,7 +13,7 @@ import {
 import { BsTelephone, BsThreeDots } from "react-icons/bs";
 import { useAppSelector } from "@/hooks/hooks";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react"; // Import useRef
 import {
   useGetConversationMessagesMutation,
   useGetSingleConversationMutation,
@@ -29,20 +29,31 @@ import {
 import { Button } from "@heroui/button";
 import Image from "next/image";
 import DeleteConversation from "@/components/ChatPage/DeleteConversation";
+import { SocketContext } from "@/redux/provider/SocketProvider";
 
 export default function Chat() {
   const { cid } = useParams();
+  const { socket, setMessages, messages, conversations, setConversations } =
+    useContext<any>(SocketContext);
 
   const [getConversationMessages, { data, isLoading, isError }] =
     useGetConversationMessagesMutation();
   const [getSingleConversation, { isLoading: isLoadingForSingleConversation }] =
     useGetSingleConversationMutation();
-  const [messages, setMessages] = useState<any>([]);
+
   const [conversationDetails, setConversationDetails] = useState<any>([]);
   const [inboxUser, setInboxUser] = useState<any>("loading");
   const currentUser = useAppSelector((state) => state.user);
   const [isActive, setIsActive] = useState<boolean>(false);
   const activeUsers = useAppSelector((state) => state.activeUsers);
+
+  // Create a reference to the message container
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     const getConversationDetails = async () => {
@@ -78,6 +89,40 @@ export default function Chat() {
   }, [cid, currentUser, activeUsers]);
 
   const user = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    if (socket) {
+      socket?.on("newMessage", (newMessage: any) => {
+        if (cid === newMessage?.CId) {
+          setMessages([...messages, newMessage]);
+        }
+      });
+      return () => {
+        socket.off("newMessage");
+      };
+    }
+  }, [socket, setMessages, messages]);
+  useEffect(() => {
+    if (socket) {
+      socket?.on("conversationUpdate", () => {
+        console.log("updated");
+        const sortedConversations = [...conversations].sort(
+          (a, b) =>
+            new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+        );
+        console.log(sortedConversations);
+        setConversations(sortedConversations);
+      });
+      return () => {
+        socket.off("conversationUpdate");
+      };
+    }
+  }, [socket, setConversations, conversations]);
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <main className="rounded-xl w-full my-auto">
@@ -120,8 +165,9 @@ export default function Chat() {
           <div className="w-full flex flex-col gap-5 h-[70vh] overflow-y-auto pb-3">
             {messages.length > 0 ? (
               messages.map((messageData: any) => {
-                const variant = messageData.variant;
-                messageData.senderId === user.uid ? "sent" : "received";
+                const variant =
+                  messageData.senderId === user.uid ? "sent" : "received";
+
                 return (
                   <ChatBubble
                     key={messageData.MId}
@@ -165,11 +211,10 @@ export default function Chat() {
                         />
                       ))}
                       {messageData.isDeletedForSender ||
-                      messageData.isDeletedForAll ? (
-                        ""
-                      ) : (
-                        <MessageOptions MId={messageData.MId} />
-                      )}
+                      messageData.isDeletedForAll
+                        ? ""
+                        : // <MessageOptions MId={messageData.MId}
+                          ""}
                     </ChatBubbleActionWrapper>
                   </ChatBubble>
                 );
@@ -177,8 +222,14 @@ export default function Chat() {
             ) : (
               <p>loading</p>
             )}
+            {/* Add a div at the end of the messages to scroll into view */}
+            <div ref={messagesEndRef} />
           </div>
-          <MessageInputs senderId={user.uid as string} CId={cid as string} />
+          <MessageInputs
+            senderId={user.uid as string}
+            receiverId={inboxUser.uid}
+            CId={cid as string}
+          />
         </section>
       </main>
     </main>

@@ -1,20 +1,23 @@
 import IdGenerator from '../../util/IdGenerator';
 import MessageModel from './messages.model';
-import { getSocketIds } from '../../../lib/socket';
-import { io } from '../../socket';
+import { getReceiverSocketId, io } from '../../../lib/socket';
 
 const getAllConversationMessages = async (CId: string) => {
-  const result = await MessageModel.find({ CId }).sort({ createdAt: 1 });
+  const result = await MessageModel.find({ CId })
+    .sort({ createdAt: 1 })
+    .select({
+      _id: 0,
+    });
   return result;
 };
 
-const createAMessageIntoDB = async (payload: TMessages) => {
+const createAMessageIntoDB = async (payload: TMessages, receiverId: string) => {
   const MId = await IdGenerator('message');
   payload.MId = MId as string;
   const result = await MessageModel.create(payload);
 
-  // Fetch all active socket IDs related to the conversation
-  io.to(payload.CId).emit('newMessage', result);
+  const receiverSocketId = getReceiverSocketId(receiverId);
+  io.to(receiverSocketId).emit('newMessage', result);
 
   return result;
 };

@@ -1,3 +1,4 @@
+import { getReceiverSocketId, io } from '../../../lib/socket';
 import IdGenerator from '../../util/IdGenerator';
 import TConversation, { TParticipant } from './conversations.interface';
 import ConversationModel from './converstations.model';
@@ -72,6 +73,20 @@ const createAConversationIntoDB = async (payload: TConversation) => {
   return result;
 };
 
+const updateLastMessageIdOfConversation = async (
+  CId: string,
+  MId: String,
+  receiverId: string,
+) => {
+  const result = await ConversationModel.findOneAndUpdate(
+    { CId },
+    { lastMessageId: MId },
+  );
+  const receiverSocketId = getReceiverSocketId(receiverId);
+  io.to(receiverSocketId).emit('conversationUpdate', result);
+  return result;
+};
+
 const removeAConversationFromDB = async (CId: string) => {
   const result = await ConversationModel.updateOne(
     { CId, isDeleted: false },
@@ -84,5 +99,6 @@ export default {
   getSingleConversationsFromDB,
   getAllConversationsFromDB,
   createAConversationIntoDB,
+  updateLastMessageIdOfConversation,
   removeAConversationFromDB,
 };
