@@ -15,17 +15,19 @@ import { ThemeSwitch } from "./theme-switch";
 import Image from "next/image";
 import LogoutModal from "./logoutModal";
 import { Input } from "@heroui/input";
-import { TbEdit } from "react-icons/tb";
+
 import { IoIosSettings } from "react-icons/io";
 import { useGetUserConversationsMutation } from "@/redux/api/apiSlice";
 import { useContext, useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/hooks";
 import { SocketContext } from "@/redux/provider/SocketProvider";
+import CreateGroup from "./ChatPage/createGroup";
 
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { conversations, setConversations } = useContext<any>(SocketContext);
+  const { socket, conversations, setConversations } =
+    useContext<any>(SocketContext);
   const [getConversations, { data }] = useGetUserConversationsMutation();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,7 +53,28 @@ export function AppSidebar() {
       router.push("/chat");
     }
   };
-
+  useEffect(() => {
+    if (socket) {
+      socket?.on("conversationUpdate", (updatedConversation: any) => {
+        console.log(updatedConversation);
+        const removedUpdatedConversation = conversations.filter((con: any) => {
+          return con.CId !== updatedConversation.CId;
+        });
+        const sortedConversations = [
+          ...removedUpdatedConversation,
+          updatedConversation,
+        ].sort(
+          (a, b) =>
+            new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+        );
+        console.log(sortedConversations);
+        setConversations(sortedConversations);
+      });
+      return () => {
+        socket.off("conversationUpdate");
+      };
+    }
+  }, [socket, setConversations, conversations, getConversations]);
   return (
     <Sidebar>
       <SidebarContent>
@@ -61,7 +84,8 @@ export function AppSidebar() {
               <Image height={50} width={50} alt="logo" src="/hero.png" />
               <h1>ChatterBox</h1>
             </div>
-            <TbEdit className="text-xl" />
+
+            <CreateGroup />
           </div>
           <SidebarGroupContent className="mt-3">
             <Input

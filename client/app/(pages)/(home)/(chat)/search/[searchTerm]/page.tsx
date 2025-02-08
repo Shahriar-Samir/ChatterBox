@@ -33,6 +33,7 @@ export default function Search() {
   };
 
   const startConversationHandler = async (receiverUser: any) => {
+    console.log(receiverUser);
     let type = "";
     if (receiverUser?.uid) {
       type = "inbox";
@@ -62,7 +63,7 @@ export default function Search() {
       };
 
       const result = await startConversation(payload);
-      console.log(result, "resutl");
+      console.log(result, "result");
       router.push(`/${result.data.data.CId}`);
     } catch (err) {
       console.error(err);

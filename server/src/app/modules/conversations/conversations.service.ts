@@ -82,6 +82,7 @@ const updateLastMessageIdOfConversation = async (
     { CId },
     { lastMessageId: MId },
   );
+  console.log(receiverId);
   const receiverSocketId = getReceiverSocketId(receiverId);
   io.to(receiverSocketId).emit('conversationUpdate', result);
   return result;

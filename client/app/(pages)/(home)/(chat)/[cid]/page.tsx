@@ -102,22 +102,6 @@ export default function Chat() {
       };
     }
   }, [socket, setMessages, messages]);
-  useEffect(() => {
-    if (socket) {
-      socket?.on("conversationUpdate", () => {
-        console.log("updated");
-        const sortedConversations = [...conversations].sort(
-          (a, b) =>
-            new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
-        );
-        console.log(sortedConversations);
-        setConversations(sortedConversations);
-      });
-      return () => {
-        socket.off("conversationUpdate");
-      };
-    }
-  }, [socket, setConversations, conversations]);
 
   // Scroll to bottom whenever messages change
   useEffect(() => {
