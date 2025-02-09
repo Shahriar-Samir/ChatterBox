@@ -33,58 +33,99 @@ const createAConversationIntoDB = async (payload: TConversation) => {
     CId,
     isDeleted: false,
   });
+
   if (isConversationExist) {
-    throw new Error('Conversation already exist ');
+    throw new Error('Conversation already exists');
   }
+
   payload.CId = CId as string;
+
   if (payload.participants.length <= 1) {
-    throw new Error('number of participants can not be one or less than one');
+    throw new Error('Number of participants cannot be one or less');
   }
 
-  const participantUids = payload.participants.map((p) => p.uid);
+  // const participantUids = payload.participants.map((p) => p.uid);
 
-  const commonExist = await ConversationModel.findOne({
-    participants: {
-      $all: participantUids.map((uid) => ({ $elemMatch: { uid } })),
-    },
-    type: payload.type,
-    isDeleted: false,
-  }).select({
-    name: 0,
-    __v: 0,
-    createdAt: 0,
-    updatedAt: 0,
-    participants: 0,
-    isDeleted: 0,
-  });
+  // const commonExist = await ConversationModel.findOne({
+  //   participants: { $all: participantUids }, // Match all participants' uids
+  //   $expr: { $eq: [{ $size: '$participants' }, 2] }, // Ensure exactly 2 participants
+  //   type: payload.type,
+  //   isDeleted: false,
+  // }).select({
+  //   name: 0,
+  //   __v: 0,
+  //   createdAt: 0,
+  //   updatedAt: 0,
+  //   participants: 0,
+  //   isDeleted: 0,
+  // });
 
-  if (commonExist) {
-    const result = commonExist;
-    return result;
-  }
+  // console.log(payload);
 
+  // if (commonExist) {
+  //   return commonExist; // Return existing conversation
+  // }
+
+  // Validation for max participants based on conversation type
   if (payload.type === 'inbox' && payload.participants.length > 2) {
-    throw new Error('maximum number of participants can not be more than two');
+    throw new Error('Maximum number of participants cannot be more than two');
   }
+
   if (payload.type === 'group' && payload.participants.length > 10) {
-    throw new Error('maximum number of participants can not be more than ten');
+    throw new Error('Maximum number of participants cannot be more than ten');
   }
+
+  // Create the conversation
   const result = await ConversationModel.create(payload);
-  return result;
+  // Fetch socket IDs for the participants
+  const receiverSocketIds = getReceiverSocketId([
+    ...payload.participants.map((participant) => participant.uid),
+  ]);
+
+  // Emit updates to the relevant users
+  if (Array.isArray(receiverSocketIds)) {
+    // Emit to each socket if there are multiple receivers
+    receiverSocketIds.forEach((socketId) => {
+      if (socketId) {
+        io.to(socketId).emit('conversationUpdate', result);
+      }
+    });
+  } else if (receiverSocketIds) {
+    // Emit to a single receiver
+    io.to(receiverSocketIds).emit('conversationUpdate', result);
+  }
+
+  return result; // Return the created conversation
 };
 
 const updateLastMessageIdOfConversation = async (
   CId: string,
-  MId: String,
-  receiverId: string,
+  MId: string,
+  receiverId: string | string[], // receiverId can now be a single string or an array of strings
 ) => {
+  // Update the conversation's last message ID
   const result = await ConversationModel.findOneAndUpdate(
     { CId },
     { lastMessageId: MId },
+    { new: true }, // Ensures the updated document is returned
   );
   console.log(receiverId);
-  const receiverSocketId = getReceiverSocketId(receiverId);
-  io.to(receiverSocketId).emit('conversationUpdate', result);
+
+  // Get socket ID(s) for the receiver(s)
+  const receiverSocketIds = getReceiverSocketId(receiverId);
+
+  if (Array.isArray(receiverSocketIds)) {
+    // If it's an array (multiple receivers), emit to each socket
+    receiverSocketIds.forEach((socketId) => {
+      if (socketId) {
+        io.to(socketId).emit('conversationUpdate', result);
+      }
+    });
+  } else if (receiverSocketIds) {
+    // If it's a single receiver, emit to that socket ID
+    io.to(receiverSocketIds).emit('conversationUpdate', result);
+  }
+
   return result;
 };
 

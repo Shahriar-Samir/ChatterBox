@@ -20,6 +20,7 @@ import {
 } from "@/redux/api/apiSlice";
 import MessageInputs from "@/components/ChatPage/SendMessage";
 import MessageOptions from "@/components/ChatPage/MessageOptions";
+import { formatDistanceToNow } from "date-fns";
 import {
   Dropdown,
   DropdownItem,
@@ -30,6 +31,7 @@ import { Button } from "@heroui/button";
 import Image from "next/image";
 import DeleteConversation from "@/components/ChatPage/DeleteConversation";
 import { SocketContext } from "@/redux/provider/SocketProvider";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function Chat() {
   const { cid } = useParams();
@@ -156,30 +158,58 @@ export default function Chat() {
                   <ChatBubble
                     key={messageData.MId}
                     variant={variant}
-                    className="gap-4"
+                    className="gap-4 items-start"
                   >
-                    <ChatBubbleAvatar
-                      fallback={variant === "sent" ? "US" : "AI"}
-                    />
-                    {variant === "sent" && messageData.isDeletedForSender ? (
-                      <ChatBubbleMessage
-                        className="border border-gray-200 dark:border-gray-700 text-sm text-black dark:text-white bg-transparent"
-                        isLoading={false}
-                      >
-                        message unsent
-                      </ChatBubbleMessage>
-                    ) : (
-                      <ChatBubbleMessage
-                        className={
-                          variant === "sent"
-                            ? "bg-gradient-to-r from-commonColor to-[#655ba8] dark:from-commonColor dark:to-transparent dark:bg-transparent dark:text-white shadow-md shadow-commonColor  transition-all hover:translate-x-1"
-                            : "transition-all hover:translate-x-[-5px]"
-                        }
-                        isLoading={false}
-                      >
-                        {messageData.content}
-                      </ChatBubbleMessage>
-                    )}
+                    <div className="flex  gap-1">
+                      {variant === "received" ? (
+                        <ChatBubbleAvatar
+                          fallback={
+                            currentUser.img ? (
+                              currentUser.img
+                            ) : (
+                              <FaUserCircle className="w-full h-full" />
+                            )
+                          }
+                          className="!p-0"
+                        />
+                      ) : (
+                        ""
+                      )}
+                      <div>
+                        <h1 className="text-xs">
+                          {variant === "sent" ? "" : inboxUser.firstName}
+                        </h1>
+                        {variant === "sent" &&
+                        messageData.isDeletedForSender ? (
+                          <ChatBubbleMessage
+                            className="border border-gray-200 dark:border-gray-700 text-sm text-black dark:text-white bg-transparent"
+                            isLoading={false}
+                          >
+                            message unsent
+                          </ChatBubbleMessage>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            <ChatBubbleMessage
+                              className={
+                                variant === "sent"
+                                  ? "bg-gradient-to-r from-commonColor to-[#655ba8] dark:from-commonColor dark:to-transparent dark:bg-transparent text-white shadow-md shadow-commonColor  transition-all hover:translate-x-1"
+                                  : "transition-all hover:translate-x-[-5px]"
+                              }
+                              isLoading={false}
+                            >
+                              {messageData.content}
+                            </ChatBubbleMessage>
+                            <div className="text-xs">
+                              {formatDistanceToNow(
+                                new Date(messageData.createdAt),
+                                { addSuffix: true }
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     {/* Action Icons */}
                     <ChatBubbleActionWrapper>
                       {[].map(({ icon: Icon, type }) => (

@@ -20,12 +20,15 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TbEdit } from "react-icons/tb";
 import { useRouter } from "next/navigation";
+import { SocketContext } from "@/redux/provider/SocketProvider";
 
-export default function CreateGroup({ currentUId }: { currentUId: string }) {
+export default function CreateGroup() {
   const router = useRouter();
+  const { socket, conversations, setConversations } =
+    useContext<any>(SocketContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const currentUser = useAppSelector((state) => state.user);
   const [getConversationUsers] = useGetConversationUsersMutation();
@@ -41,6 +44,7 @@ export default function CreateGroup({ currentUId }: { currentUId: string }) {
 
   // Update handler to store full user objects instead of just ids
   const groupCreateHandler = async (onClose) => {
+    console.log(selectedUsers);
     const data = {
       groupName,
       selectedUsers: selectedUsers, // full user objects
@@ -57,6 +61,7 @@ export default function CreateGroup({ currentUId }: { currentUId: string }) {
           uid: currentUser.uid,
           firstName: currentUser?.firstName,
           lastName: currentUser?.lastName,
+          participantType: "admin",
           conStatus: "accepted",
         },
 
@@ -65,6 +70,7 @@ export default function CreateGroup({ currentUId }: { currentUId: string }) {
             uid: user.uid,
             firstName: user.firstName,
             lastName: user.lastName,
+            participantType: "user",
             joinedAt: null,
             conStatus: "pending",
           };
@@ -73,6 +79,13 @@ export default function CreateGroup({ currentUId }: { currentUId: string }) {
       type: "group",
     };
     const res = await startConversation(payload);
+    console.log(res);
+    const updatedConversations = [...conversations, res.data.data].sort(
+      (a: any, b: any) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+
+    setConversations(updatedConversations);
     router.push(`/${res.data.data.CId}`);
     onClose();
     const result = callServer(data);
@@ -81,12 +94,13 @@ export default function CreateGroup({ currentUId }: { currentUId: string }) {
 
   useEffect(() => {
     const getUsers = async () => {
-      const res = await getConversationUsers(currentUId);
+      const res = await getConversationUsers(currentUser.uid);
+      console.log(res.data.data);
       setUsers(res.data.data);
     };
     1;
     getUsers();
-  }, [currentUId]);
+  }, [currentUser]);
 
   // Handle selection change to update selected users
   const handleSelectionChange = (keys) => {
@@ -96,6 +110,8 @@ export default function CreateGroup({ currentUId }: { currentUId: string }) {
     );
     setSelectedUsers(selectedUserObjects); // store full user objects
   };
+
+  console.log(users);
 
   return (
     <>

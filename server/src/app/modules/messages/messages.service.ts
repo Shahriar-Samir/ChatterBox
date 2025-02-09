@@ -11,13 +11,30 @@ const getAllConversationMessages = async (CId: string) => {
   return result;
 };
 
-const createAMessageIntoDB = async (payload: TMessages, receiverId: string) => {
+const createAMessageIntoDB = async (
+  payload: TMessages,
+  receiverId: string | string[],
+) => {
   const MId = await IdGenerator('message');
   payload.MId = MId as string;
   const result = await MessageModel.create(payload);
 
-  const receiverSocketId = getReceiverSocketId(receiverId);
-  io.to(receiverSocketId).emit('newMessage', result);
+  let receiverSocketIds: string[];
+
+  if (Array.isArray(receiverId)) {
+    // If receiverId is an array, get the socket IDs for each receiver
+    receiverSocketIds = receiverId.map((id) => getReceiverSocketId(id));
+  } else {
+    // If it's a single receiver, just get the socket ID
+    receiverSocketIds = [getReceiverSocketId(receiverId)];
+  }
+
+  // Emit the 'newMessage' event to each receiver
+  receiverSocketIds.forEach((socketId) => {
+    if (socketId) {
+      io.to(socketId).emit('newMessage', result);
+    }
+  });
 
   return result;
 };
@@ -29,7 +46,25 @@ const updateAMessageIntoDB = async (MId: string, payload: TMessages) => {
   );
 
   if (result.modifiedCount > 0) {
-    io.to(payload.CId).emit('updateMessage', { MId, content: payload.content });
+    const conversationSocketIds = getReceiverSocketId(payload.CId);
+
+    if (Array.isArray(conversationSocketIds)) {
+      // Emit to each socket in the array if multiple users are involved
+      conversationSocketIds.forEach((socketId) => {
+        if (socketId) {
+          io.to(socketId).emit('updateMessage', {
+            MId,
+            content: payload.content,
+          });
+        }
+      });
+    } else if (conversationSocketIds) {
+      // Single receiver
+      io.to(conversationSocketIds).emit('updateMessage', {
+        MId,
+        content: payload.content,
+      });
+    }
   }
 
   return result;
@@ -41,6 +76,7 @@ const removeAMessageForAllIntoDB = async (MId: string) => {
     isDeletedForAll: false,
     isDeletedForSender: false,
   });
+
   if (!message) return null;
 
   const result = await MessageModel.updateOne(
@@ -49,6 +85,7 @@ const removeAMessageForAllIntoDB = async (MId: string) => {
   );
 
   if (result.modifiedCount > 0) {
+    // Emit to all users in the conversation (CId)
     io.to(message.CId).emit('deleteMessageForAll', { MId });
   }
 
@@ -61,6 +98,7 @@ const removeAMessageForSenderIntoDB = async (MId: string) => {
     isDeletedForAll: false,
     isDeletedForSender: false,
   });
+
   if (!message) return null;
 
   const result = await MessageModel.updateOne(
@@ -69,6 +107,7 @@ const removeAMessageForSenderIntoDB = async (MId: string) => {
   );
 
   if (result.modifiedCount > 0) {
+    // Emit to the conversation where the sender is
     io.to(message.CId).emit('deleteMessageForSender', { MId });
   }
 

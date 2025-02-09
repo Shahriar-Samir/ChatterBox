@@ -10,6 +10,10 @@ const userSchema = new Schema<TUser>(
       required: true,
       unique: true,
     },
+    participantType: {
+      type: String,
+      enum: ['admin', 'user'],
+    },
     email: {
       type: String,
       required: true,

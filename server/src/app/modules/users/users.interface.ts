@@ -5,4 +5,5 @@ export type TUser = {
   email: string;
   password: string;
   isDeleted: boolean;
+  participantType: 'admin' | 'user';
 };

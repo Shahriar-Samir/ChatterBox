@@ -12,28 +12,55 @@ const getSingleUserFromDB = async (uid: string) => {
 
 const getConversationUsersFromDB = async (uid: string) => {
   const result = await ConversationModel.find({
-    participants: { $elemMatch: { uid: { $ne: uid } } },
+    'participants.uid': uid, // Ensure current user is part of the conversation
     isDeleted: false,
   })
     .sort({ updatedAt: -1 })
-    .select('participants'); // Optionally, you can select only the participants field
+    .select({
+      participants: 1, // Select only participants
+    });
 
-  // Flatten the participants and remove duplicates by uid
+  // Extract users other than the current user
   const users = result
     .map((conversation) =>
       conversation.participants.filter(
-        (participant) => participant.uid !== uid,
+        (participant) => participant.uid !== uid, // Exclude the current user
       ),
     )
     .flat(); // Flatten the array of participants
 
-  // Use a Set to eliminate duplicates based on uid
+  // Use a Map to eliminate duplicates based on uid
   const uniqueUsers = Array.from(
     new Map(users.map((user) => [user.uid, user])).values(),
   );
-
+  console.log(uniqueUsers);
   return uniqueUsers;
 };
+
+// const getConversationUsersFromDB = async (uid: string) => {
+//   console.log();
+//   const result = await ConversationModel.find({
+//     participants: { $elemMatch: { uid: { $ne: uid } } },
+//     isDeleted: false,
+//   })
+//     .sort({ updatedAt: -1 })
+//     .select('participants'); // Optionally, you can select only the participants field
+
+//   // Flatten the participants and remove duplicates by uid
+//   const users = result
+//     .map((conversation) =>
+//       conversation.participants.filter(
+//         (participant) => participant.uid !== uid,
+//       ),
+//     )
+//     .flat(); // Flatten the array of participants
+
+//   // Use a Set to eliminate duplicates based on uid
+//   const uniqueUsers = Array.from(
+//     new Map(users.map((user) => [user.uid, user])).values(),
+//   );
+//   return uniqueUsers;
+// };
 
 const createUserIntoDB = async (payload: TUser) => {
   const uid = await IdGenerator('user');
