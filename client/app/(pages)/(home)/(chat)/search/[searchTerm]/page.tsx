@@ -38,7 +38,7 @@ export default function Search() {
     if (receiverUser?.uid) {
       type = "inbox";
     }
-    if (receiverUser.cid) {
+    if (receiverUser?.cid) {
       type = "group";
     }
 

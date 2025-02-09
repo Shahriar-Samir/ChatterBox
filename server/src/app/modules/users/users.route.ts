@@ -5,6 +5,12 @@ import { validateAccessTokenWithUID } from '../../middlewares/auth';
 const router = express.Router();
 
 router.get('/:uid', validateAccessTokenWithUID, usersController.getSingleUser);
+router.get('/:uid', validateAccessTokenWithUID, usersController.getSingleUser);
+router.get(
+  '/getConversationUsers/:uid',
+  //   validateAccessTokenWithUID,
+  usersController.getConversationUsers,
+);
 router.post('/', usersController.createUser);
 router.patch('/updateInfo/:uid', usersController.updateUserInfo);
 router.patch('/updatePassword/:uid', usersController.updateUserPassword);

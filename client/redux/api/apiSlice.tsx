@@ -92,6 +92,12 @@ export const chatterBoxApi = createApi({
         method: "GET",
       }),
     }),
+    getConversationUsers: builder.mutation({
+      query: (UId) => ({
+        url: `/users/getConversationUsers/${UId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -110,4 +116,5 @@ export const {
   useStartConversationMutation,
   useGetSingleConversationMutation,
   useUpdateMidOfConversationMutation,
+  useGetConversationUsersMutation,
 } = chatterBoxApi;

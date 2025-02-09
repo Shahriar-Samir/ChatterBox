@@ -1,3 +1,8 @@
+import { useAppSelector } from "@/hooks/hooks";
+import {
+  useGetConversationUsersMutation,
+  useStartConversationMutation,
+} from "@/redux/api/apiSlice";
 import {
   Modal,
   ModalContent,
@@ -8,39 +13,93 @@ import {
   useDisclosure,
   Form,
   Input,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@heroui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TbEdit } from "react-icons/tb";
+import { useRouter } from "next/navigation";
 
-export default function CreateGroup({
-  currentUId,
-  uids,
-}: {
-  currentUId: string;
-  uids: string;
-}) {
+export default function CreateGroup({ currentUId }: { currentUId: string }) {
+  const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [errors, setErrors] = React.useState({});
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const currentUser = useAppSelector((state) => state.user);
+  const [getConversationUsers] = useGetConversationUsersMutation();
+  const [startConversation] = useStartConversationMutation();
+  const [users, setUsers] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [groupName, setGroupName] = useState<string | null>(null);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([]); // Updated to store user objects
 
-    const data = Object.fromEntries(new FormData(e.currentTarget));
+  const groupNameHandler = (e) => {
+    setGroupName(e.target.value);
+  };
 
-    if (!data.username) {
-      setErrors({ username: "Username is required" });
+  // Update handler to store full user objects instead of just ids
+  const groupCreateHandler = async (onClose) => {
+    const data = {
+      groupName,
+      selectedUsers: selectedUsers, // full user objects
+    };
 
+    if (!data.groupName) {
+      setErrors({ groupName: "Group name is required" });
       return;
     }
+    const payload = {
+      name: groupName,
+      participants: [
+        {
+          uid: currentUser.uid,
+          firstName: currentUser?.firstName,
+          lastName: currentUser?.lastName,
+          conStatus: "accepted",
+        },
 
+        ...selectedUsers.map((user) => {
+          return {
+            uid: user.uid,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            joinedAt: null,
+            conStatus: "pending",
+          };
+        }),
+      ],
+      type: "group",
+    };
+    const res = await startConversation(payload);
+    router.push(`/${res.data.data.CId}`);
+    onClose();
     const result = callServer(data);
-
     setErrors(result.errors);
+  };
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const res = await getConversationUsers(currentUId);
+      setUsers(res.data.data);
+    };
+    1;
+    getUsers();
+  }, [currentUId]);
+
+  // Handle selection change to update selected users
+  const handleSelectionChange = (keys) => {
+    const selectedIds = Array.from(keys);
+    const selectedUserObjects = users.filter((user) =>
+      selectedIds.includes(user.uid)
+    );
+    setSelectedUsers(selectedUserObjects); // store full user objects
   };
 
   return (
     <>
       <Button onPress={onOpen}>
-        {" "}
         <TbEdit className="text-xl" />
       </Button>
       <Modal
@@ -51,18 +110,12 @@ export default function CreateGroup({
             enter: {
               y: 0,
               opacity: 1,
-              transition: {
-                duration: 0.3,
-                ease: "easeOut",
-              },
+              transition: { duration: 0.3, ease: "easeOut" },
             },
             exit: {
               y: -20,
               opacity: 0,
-              transition: {
-                duration: 0.2,
-                ease: "easeIn",
-              },
+              transition: { duration: 0.2, ease: "easeIn" },
             },
           },
         }}
@@ -76,27 +129,54 @@ export default function CreateGroup({
               </ModalHeader>
               <ModalBody>
                 <Form
-                  className="w-full max-w-xs flex flex-col gap-3"
+                  className="w-full flex flex-col gap-3"
                   validationErrors={errors}
-                  onSubmit={onSubmit}
                 >
                   <Input
                     label="Group name"
                     labelPlacement="outside"
-                    name="username"
+                    name="groupName"
                     placeholder="Enter group name"
+                    onChange={groupNameHandler}
                   />
-                  <Button type="submit" variant="flat">
-                    Submit
-                  </Button>
+                  <Table
+                    aria-label="Example static collection table"
+                    selectionMode="multiple"
+                    selectedKeys={
+                      new Set(selectedUsers.map((user) => user.uid))
+                    }
+                    onSelectionChange={(keys) => handleSelectionChange(keys)}
+                  >
+                    <TableHeader>
+                      <TableColumn>NAME</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      {users.length > 0 ? (
+                        users.map((user) => (
+                          <TableRow key={user.uid}>
+                            <TableCell>
+                              {user.firstName} {user.lastName}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell>No users found</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
                 </Form>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                  Cancel
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
+                <Button
+                  color="primary"
+                  onPress={() => groupCreateHandler(onClose)}
+                >
+                  Create a group
                 </Button>
               </ModalFooter>
             </>

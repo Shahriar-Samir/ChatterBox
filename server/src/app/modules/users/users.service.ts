@@ -1,5 +1,6 @@
 import config from '../../config';
 import IdGenerator from '../../util/IdGenerator';
+import ConversationModel from '../conversations/converstations.model';
 import { TUser } from './users.interface';
 import UserModel from './users.model';
 import bcrypt from 'bcrypt';
@@ -7,6 +8,31 @@ import bcrypt from 'bcrypt';
 const getSingleUserFromDB = async (uid: string) => {
   const result = await UserModel.findOne({ uid, isDeleted: false });
   return result;
+};
+
+const getConversationUsersFromDB = async (uid: string) => {
+  const result = await ConversationModel.find({
+    participants: { $elemMatch: { uid: { $ne: uid } } },
+    isDeleted: false,
+  })
+    .sort({ updatedAt: -1 })
+    .select('participants'); // Optionally, you can select only the participants field
+
+  // Flatten the participants and remove duplicates by uid
+  const users = result
+    .map((conversation) =>
+      conversation.participants.filter(
+        (participant) => participant.uid !== uid,
+      ),
+    )
+    .flat(); // Flatten the array of participants
+
+  // Use a Set to eliminate duplicates based on uid
+  const uniqueUsers = Array.from(
+    new Map(users.map((user) => [user.uid, user])).values(),
+  );
+
+  return uniqueUsers;
 };
 
 const createUserIntoDB = async (payload: TUser) => {
@@ -60,4 +86,5 @@ export default {
   updateUserInfoInDB,
   updateUserPasswordInDB,
   deleteUserFromDB,
+  getConversationUsersFromDB,
 };

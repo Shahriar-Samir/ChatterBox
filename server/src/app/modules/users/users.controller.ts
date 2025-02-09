@@ -22,6 +22,16 @@ const getSingleUser = catchAsync(async (req, res) => {
   });
 });
 
+const getConversationUsers = catchAsync(async (req, res) => {
+  const result = await usersService.getConversationUsersFromDB(req.params.uid);
+  sendResponse(res, {
+    success: true,
+    status: 201,
+    message: 'All conversation users data retrieved successfully',
+    data: result,
+  });
+});
+
 const updateUserInfo = catchAsync(async (req, res) => {
   const result = await usersService.updateUserInfoInDB(
     req.params.uid,
@@ -64,4 +74,5 @@ export default {
   updateUserInfo,
   updateUserPassword,
   deleteUser,
+  getConversationUsers,
 };
