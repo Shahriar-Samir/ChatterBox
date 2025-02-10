@@ -24,6 +24,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { TbEdit } from "react-icons/tb";
 import { useRouter } from "next/navigation";
 import { SocketContext } from "@/redux/provider/SocketProvider";
+import { MdGroupAdd } from "react-icons/md";
 
 export default function CreateGroup() {
   const router = useRouter();
@@ -54,8 +55,15 @@ export default function CreateGroup() {
       setErrors({ groupName: "Group name is required" });
       return;
     }
+
+    if (selectedUsers.length < 2) {
+      setErrors({ groupName: "Group participants not selected" });
+      return;
+    }
+
     const payload = {
       name: groupName,
+      adminId: currentUser.uid,
       participants: [
         {
           uid: currentUser.uid,
@@ -116,7 +124,7 @@ export default function CreateGroup() {
   return (
     <>
       <Button onPress={onOpen}>
-        <TbEdit className="text-xl" />
+        <MdGroupAdd className="text-xl" />
       </Button>
       <Modal
         backdrop="opaque"

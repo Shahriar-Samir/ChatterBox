@@ -92,10 +92,44 @@ export const chatterBoxApi = createApi({
         method: "GET",
       }),
     }),
+    getSingleUser: builder.mutation({
+      query: (uid) => ({
+        url: `/users/getSingleUser/${uid}`,
+        method: "GET",
+      }),
+    }),
     getConversationUsers: builder.mutation({
       query: (UId) => ({
         url: `/users/getConversationUsers/${UId}`,
         method: "GET",
+      }),
+    }),
+    updateGroup: builder.mutation({
+      query: ({ CId, groupName }) => ({
+        url: `/users/updateGroupConversation?cid=${CId}&groupName=${groupName}`,
+        method: "PATCH",
+      }),
+    }),
+    removeGroupUser: builder.mutation({
+      query: ({ CId, UId }) => ({
+        url: `/conversations/removeParticipant?cid=${CId}&uid=${UId}`,
+        method: "DELETE",
+      }),
+    }),
+
+    // 2️⃣ Add a participant to a group conversation
+    addGroupUser: builder.mutation({
+      query: ({ CId, UId }) => ({
+        url: `/conversations/addParticipantToGroup?cid=${CId}&uid=${UId}`,
+        method: "POST",
+      }),
+    }),
+
+    // 3️⃣ Leave a group conversation
+    leaveGroupConversation: builder.mutation({
+      query: ({ CId, UId }) => ({
+        url: `/conversations/leaveGroup?cid=${CId}&uid=${UId}`,
+        method: "DELETE",
       }),
     }),
   }),
@@ -117,4 +151,7 @@ export const {
   useGetSingleConversationMutation,
   useUpdateMidOfConversationMutation,
   useGetConversationUsersMutation,
+  useGetSingleUserMutation,
+  useUpdateGroupMutation,
+  useLeaveGroupConversationMutation
 } = chatterBoxApi;

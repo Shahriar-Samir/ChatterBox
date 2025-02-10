@@ -4,8 +4,11 @@ import { validateAccessTokenWithUID } from '../../middlewares/auth';
 
 const router = express.Router();
 
-router.get('/:uid', validateAccessTokenWithUID, usersController.getSingleUser);
-router.get('/:uid', validateAccessTokenWithUID, usersController.getSingleUser);
+router.get(
+  '/getSingleUser/:uid',
+  // validateAccessTokenWithUID,
+  usersController.getSingleUser,
+);
 router.get(
   '/getConversationUsers/:uid',
   //   validateAccessTokenWithUID,

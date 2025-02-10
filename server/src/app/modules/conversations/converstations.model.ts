@@ -58,6 +58,9 @@ const conversationSchema = new Schema<TConversation>(
       default: false,
       required: true,
     },
+    adminId: {
+      type: String ,
+    },
   },
   {
     timestamps: true,

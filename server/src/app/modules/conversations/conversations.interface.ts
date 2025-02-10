@@ -10,12 +10,13 @@ export type TParticipant = {
 type TConversation = {
   CId: string;
   name: string;
+  adminId: string;
   participants: TConversation[];
   type: 'inbox' | 'group';
   createdAt: String;
   updatedAt: String;
   isDeleted: false;
-  lastMessageId: string,
+  lastMessageId: string;
 };
 
 export default TConversation;

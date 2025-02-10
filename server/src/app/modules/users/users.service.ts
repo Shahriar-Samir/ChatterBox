@@ -6,6 +6,7 @@ import UserModel from './users.model';
 import bcrypt from 'bcrypt';
 
 const getSingleUserFromDB = async (uid: string) => {
+  console.log(uid);
   const result = await UserModel.findOne({ uid, isDeleted: false });
   return result;
 };

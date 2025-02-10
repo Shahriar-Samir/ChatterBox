@@ -14,6 +14,32 @@ const getAllUserConversation = catchAsync(async (req, res) => {
   });
 });
 
+const updateGroupConversation = catchAsync(async (req, res) => {
+  const result = await conversationsService.updateGroupConversation(
+    req.query.cid as string,
+    req.query.groupName as string,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'Group data update successfully',
+    data: null,
+  });
+});
+
+const addNewParticipantToGroup = catchAsync(async (req, res) => {
+  const result = await conversationsService.addParticipantInGroupConversation(
+    req.params.uid,
+    req.body,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'A new member added successfully',
+    data: null,
+  });
+});
+
 const getSingleUserConversation = catchAsync(async (req, res) => {
   const result = await conversationsService.getSingleConversationsFromDB(
     req.params.cid,
@@ -62,11 +88,40 @@ const removedAConversation = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const removedAParticipantFromConversation = catchAsync(async (req, res) => {
+  const result =
+    await conversationsService.removeParticipantFromGroupConversation(
+      req.query.cid as string,
+      req.query.uid as string,
+    );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'Group participant removed successfully',
+    data: null,
+  });
+});
+const leaveFromAGroupConversation = catchAsync(async (req, res) => {
+  const result = await conversationsService.leaveGroupConversation(
+    req.query.cid as string,
+    req.query.uid as string,
+  );
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: 'Leaved from group successfully',
+    data: null,
+  });
+});
 
 export default {
   startANewConversation,
+  addNewParticipantToGroup,
+  updateGroupConversation,
   removedAConversation,
   getAllUserConversation,
   getSingleUserConversation,
   updateMIDofConversation,
+  removedAParticipantFromConversation,
+  leaveFromAGroupConversation,
 };

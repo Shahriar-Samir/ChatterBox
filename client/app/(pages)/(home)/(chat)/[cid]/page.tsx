@@ -32,6 +32,7 @@ import Image from "next/image";
 import DeleteConversation from "@/components/ChatPage/DeleteConversation";
 import { SocketContext } from "@/redux/provider/SocketProvider";
 import { FaUserCircle } from "react-icons/fa";
+import Link from "next/link";
 
 export default function Chat() {
   const { cid } = useParams();
@@ -116,35 +117,48 @@ export default function Chat() {
       <main className="w-full h-full mt-3">
         <section className="flex justify-between items-center px-5 shadow-md shadow-[#51469960] py-2 rounded-lg gap-2">
           <div className="flex gap-5 items-center">
-            <Image
-              height={500}
-              width={500}
-              className="w-[45px] h-[45px] rounded-full"
-              src="/hero.png"
-              alt=""
-            />
-            <div className="flex flex-col gap-1">
-              <h1 className="text-md">
-                {conversationDetails?.name
-                  ? conversationDetails.name
-                  : inboxUser?.firstName && inboxUser?.lastName
-                    ? `${inboxUser?.firstName} ${inboxUser.lastName}`
-                    : ""}
-              </h1>
-              {isActive ? (
-                <h2 className="text-sm flex items-center gap-1">
-                  Active <GoDotFill className="text-green-500" />
-                </h2>
-              ) : (
-                <h2 className="text-sm flex items-center gap-1">Offline</h2>
-              )}
-            </div>
+            <Link
+              href={
+                inboxUser.uid
+                  ? `/user-details/${inboxUser.uid}`
+                  : `/group-details/${cid}`
+              }
+              className="flex gap-2"
+            >
+              <Image
+                height={500}
+                width={500}
+                className="w-[45px] h-[45px] rounded-full"
+                src="/hero.png"
+                alt=""
+              />
+              <div className="flex flex-col gap-1">
+                <h1 className="text-md">
+                  {conversationDetails?.name
+                    ? conversationDetails.name
+                    : inboxUser?.firstName && inboxUser?.lastName
+                      ? `${inboxUser?.firstName} ${inboxUser.lastName}`
+                      : ""}
+                </h1>
+                {isActive ? (
+                  <h2 className="text-sm flex items-center gap-1">
+                    Active <GoDotFill className="text-green-500" />
+                  </h2>
+                ) : (
+                  <h2 className="text-sm flex items-center gap-1">Offline</h2>
+                )}
+              </div>
+            </Link>
           </div>
 
           <div className="flex items-center gap-5 ">
             <BsTelephone className="text-xl" />
             <IoVideocam className="text-2xl" />
-            <DeleteConversation CId={cid as string} />
+            <DeleteConversation
+              route="conversation"
+              CId={cid as string}
+              type={conversationDetails.type}
+            />
           </div>
         </section>
         <section className="w-full mt-5">
@@ -162,16 +176,18 @@ export default function Chat() {
                   >
                     <div className="flex  gap-1">
                       {variant === "received" ? (
-                        <ChatBubbleAvatar
-                          fallback={
-                            currentUser.img ? (
-                              currentUser.img
-                            ) : (
-                              <FaUserCircle className="w-full h-full" />
-                            )
-                          }
-                          className="!p-0"
-                        />
+                        <Link href={`/user-details/${messageData.senderId}`}>
+                          <ChatBubbleAvatar
+                            fallback={
+                              currentUser.img ? (
+                                currentUser.img
+                              ) : (
+                                <FaUserCircle className="w-full h-full" />
+                              )
+                            }
+                            className="!p-0"
+                          />
+                        </Link>
                       ) : (
                         ""
                       )}

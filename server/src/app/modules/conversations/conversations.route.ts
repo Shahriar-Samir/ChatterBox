@@ -26,6 +26,28 @@ router.patch(
   // validateAccessTokenWithUID,
   conversationsController.updateMIDofConversation,
 );
+router.patch(
+  '/updateGroupConversation',
+  // validateAccessTokenWithUID,
+  conversationsController.updateGroupConversation,
+);
+router.delete(
+  '/leaveGroup',
+  // validateAccessTokenWithUID,
+  conversationsController.leaveFromAGroupConversation,
+);
+router.delete(
+  '/removeParticipant',
+  // validateAccessTokenWithUID,
+  conversationsController.removedAParticipantFromConversation,
+);
+
+router.put(
+  '/addParticipantToGroup',
+  // validateAccessTokenWithUID,
+  conversationsController.updateGroupConversation,
+);
+
 router.delete(
   '/:cid',
   validateAccessTokenWithUID,

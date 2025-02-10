@@ -98,6 +98,30 @@ const createAConversationIntoDB = async (payload: TConversation) => {
   return result; // Return the created conversation
 };
 
+const updateGroupConversation = async (CId: string, groupName: string) => {
+  const result = await ConversationModel.updateOne(
+    { CId },
+    {
+      name: groupName,
+    },
+  );
+  return result;
+};
+
+const addParticipantInGroupConversation = async (
+  CId: string,
+  payload: TParticipant,
+) => {
+  const result = await ConversationModel.updateOne(
+    { CId, type: 'group' },
+    {
+      $addToSet: { participants: payload },
+    },
+  );
+
+  return result;
+};
+
 const updateLastMessageIdOfConversation = async (
   CId: string,
   MId: string,
@@ -137,10 +161,39 @@ const removeAConversationFromDB = async (CId: string) => {
   return result;
 };
 
+const leaveGroupConversation = async (CId: string, uid: string) => {
+  const result = await ConversationModel.updateOne(
+    { CId, isDeleted: false },
+    {
+      $pull: { participants: { uid } }, // Removes the participant object with the matching uid
+    },
+  );
+
+  return result;
+};
+
+const removeParticipantFromGroupConversation = async (
+  CId: string,
+  uid: string,
+) => {
+  const result = await ConversationModel.updateOne(
+    { CId, isDeleted: false },
+    {
+      $pull: { participants: { uid } }, // Removes the participant with the specified uid
+    },
+  );
+
+  return result;
+};
+
 export default {
   getSingleConversationsFromDB,
   getAllConversationsFromDB,
   createAConversationIntoDB,
   updateLastMessageIdOfConversation,
   removeAConversationFromDB,
+  updateGroupConversation,
+  addParticipantInGroupConversation,
+  removeParticipantFromGroupConversation,
+  leaveGroupConversation,
 };

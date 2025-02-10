@@ -22,6 +22,7 @@ import { useContext, useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/hooks";
 import { SocketContext } from "@/redux/provider/SocketProvider";
 import CreateGroup from "./ChatPage/createGroup";
+import { FaUserCircle } from "react-icons/fa";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -103,7 +104,7 @@ export function AppSidebar() {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <SidebarMenu className="flex gap-10 h-[70vh] overflow-y-auto mt-5">
+            <SidebarMenu className="flex gap-5 h-[70vh] overflow-y-auto mt-5">
               {conversations.length > 0 ? (
                 conversations.map((con: any) => {
                   const inboxUser = con.participants.filter((participant) => {
@@ -119,14 +120,10 @@ export function AppSidebar() {
                       }
                     >
                       <SidebarMenuButton asChild>
-                        <a href={con.CId}>
-                          <Image
-                            width={50}
-                            height={50}
-                            alt="user"
-                            src="/user-placeholder.png"
-                            className="border rounded-full w-[50px] h-[50px]"
-                          />
+                        <a href={con.CId} className="w-full h-full">
+                          <div className="rounded-full h-[50px] w-[50px]">
+                            <FaUserCircle className="w-full h-full" />
+                          </div>
                           <span>
                             {con.type === "group"
                               ? con.name
