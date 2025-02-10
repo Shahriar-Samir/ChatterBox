@@ -28,8 +28,8 @@ const updateGroupConversation = catchAsync(async (req, res) => {
 });
 
 const addNewParticipantToGroup = catchAsync(async (req, res) => {
-  const result = await conversationsService.addParticipantInGroupConversation(
-    req.params.uid,
+  await conversationsService.addParticipantInGroupConversation(
+    req.query?.cid as string,
     req.body,
   );
   sendResponse(res, {

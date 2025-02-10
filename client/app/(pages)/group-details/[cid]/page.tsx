@@ -3,6 +3,7 @@
 import {
   useGetSingleConversationMutation,
   useGetSingleUserMutation,
+  useRemoveGroupUserMutation,
 } from "@/redux/api/apiSlice";
 import { Button } from "@heroui/button";
 import Image from "next/image";
@@ -12,11 +13,14 @@ import { Calendar } from "lucide-react";
 import Link from "next/link";
 import { useAppSelector } from "@/hooks/hooks";
 import DeleteConversation from "@/components/ChatPage/DeleteConversation";
+import { toast } from "react-toastify";
+import AddParticipant from "@/components/ChatPage/addParticipant";
 
 export default function Details() {
   const params: { cid: string } = useParams();
   const currentUser = useAppSelector((state) => state.user);
   const [getSingleConversation] = useGetSingleConversationMutation();
+  const [removeGroupUser] = useRemoveGroupUserMutation();
   const [details, setDetails] = useState<any>({});
   const { cid } = params;
 
@@ -26,7 +30,21 @@ export default function Details() {
       setDetails(res.data.data);
     };
     getConversationDetails();
-  }, [cid]);
+  }, [cid, removeGroupUser]);
+
+
+
+  const removeParticipant = async (UId: string) => {
+    try {
+      await removeGroupUser({ UId, CId: cid });
+
+      const res = await getSingleConversation(cid);
+      setDetails(res.data.data);
+      toast.success("User removed from the group");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <main className="flex justify-center items-center w-full">
@@ -39,6 +57,7 @@ export default function Details() {
           className="w-[100px] h-[100px] border rounded-full"
         />
         <h1>{details?.name}</h1>
+        <AddParticipant details={details}/>
         <DeleteConversation type="group" CId={cid} route="details" />
         <section className="flex flex-col w-11/12 mx-auto max-w-[500px]">
           {details?.participants?.map((user) => {
@@ -60,8 +79,12 @@ export default function Details() {
                   <Link href={`/user-details/${user.uid}`}>
                     <Button>Profile</Button>
                   </Link>
-                  {currentUser.uid === details?.adminId ? (
-                    <Button>Remove</Button>
+                  {user.uid === currentUser.uid ? (
+                    ""
+                  ) : currentUser.uid == details?.adminId ? (
+                    <Button onPress={() => removeParticipant(user.uid)}>
+                      Remove
+                    </Button>
                   ) : (
                     ""
                   )}

@@ -1,5 +1,6 @@
 import { useAppSelector } from "@/hooks/hooks";
 import {
+  useAddGroupUserMutation,
   useGetConversationUsersMutation,
   useStartConversationMutation,
 } from "@/redux/api/apiSlice";
@@ -26,90 +27,65 @@ import { useRouter } from "next/navigation";
 import { SocketContext } from "@/redux/provider/SocketProvider";
 import { MdGroupAdd } from "react-icons/md";
 
-export default function CreateGroup() {
+export default function AddParticipant({ details }: { details: any }) {
   const router = useRouter();
-  const { socket, conversations, setConversations } =
-    useContext<any>(SocketContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const currentUser = useAppSelector((state) => state.user);
   const [getConversationUsers] = useGetConversationUsersMutation();
-  const [startConversation] = useStartConversationMutation();
+  const [addGroupUser] = useAddGroupUserMutation();
   const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
-  const [groupName, setGroupName] = useState<string | null>(null);
+
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]); // Updated to store user objects
 
-  const groupNameHandler = (e) => {
-    setGroupName(e.target.value);
-  };
-
   // Update handler to store full user objects instead of just ids
-  const groupCreateHandler = async (onClose) => {
+  const addNewMemberHandler = async (onClose) => {
     console.log(selectedUsers);
     const data = {
-      groupName,
       selectedUsers: selectedUsers, // full user objects
     };
 
-    if (!data.groupName) {
-      setErrors({ groupName: "Group name is required" });
-      return;
-    }
-
-    if (selectedUsers.length < 2) {
+    if (selectedUsers.length < 1) {
       setErrors({ groupName: "Group participants not selected" });
       return;
     }
 
-    const payload = {
-      name: groupName,
-      adminId: currentUser.uid,
-      participants: [
-        {
-          uid: currentUser.uid,
-          firstName: currentUser?.firstName,
-          lastName: currentUser?.lastName,
-          participantType: "admin",
-          conStatus: "accepted",
-        },
+    const payload = selectedUsers.map((user) => {
+      return {
+        uid: user.uid,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        participantType: "user",
+        joinedAt: null,
+        conStatus: "pending",
+      };
+    });
 
-        ...selectedUsers.map((user) => {
-          return {
-            uid: user.uid,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            participantType: "user",
-            joinedAt: null,
-            conStatus: "pending",
-          };
-        }),
-      ],
-      type: "group",
-    };
-    const res = await startConversation(payload);
-    console.log(res);
-    const updatedConversations = [...conversations, res.data.data].sort(
-      (a: any, b: any) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+    await addGroupUser({ CId: details.CId, payload });
+    router.push("/");
 
-    setConversations(updatedConversations);
-    router.push(`/${res.data.data.CId}`);
     onClose();
     const result = callServer(data);
     setErrors(result.errors);
   };
 
   useEffect(() => {
-    const getUsers = async () => {
-      const res = await getConversationUsers(currentUser.uid);
-      console.log(res.data.data);
-      setUsers(res.data.data);
-    };
-    1;
-    getUsers();
-  }, [currentUser]);
+    if (details.participants) {
+      const getUsers = async () => {
+        const res = await getConversationUsers(currentUser.uid);
+        const allUsers = [...res.data.data, ...details?.participants];
 
+        const removeParticipatedUsers = allUsers.filter(
+          (user, _, arr) => arr.filter((u) => u.uid === user.uid).length === 1
+        );
+        const notParticipatedUsers = removeParticipatedUsers.filter((user) => {
+          return user.uid !== currentUser.uid;
+        });
+        setUsers(notParticipatedUsers as []);
+      };
+      getUsers();
+    }
+  }, [currentUser, details]);
   // Handle selection change to update selected users
   const handleSelectionChange = (keys) => {
     const selectedIds = Array.from(keys);
@@ -119,12 +95,10 @@ export default function CreateGroup() {
     setSelectedUsers(selectedUserObjects); // store full user objects
   };
 
-
-
   return (
     <>
       <Button onPress={onOpen}>
-        <MdGroupAdd className="text-xl" />
+        Add Members <MdGroupAdd className="text-xl" />
       </Button>
       <Modal
         backdrop="opaque"
@@ -149,20 +123,13 @@ export default function CreateGroup() {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Create a group
+                Add new members
               </ModalHeader>
               <ModalBody>
                 <Form
                   className="w-full flex flex-col gap-3"
                   validationErrors={errors}
                 >
-                  <Input
-                    label="Group name"
-                    labelPlacement="outside"
-                    name="groupName"
-                    placeholder="Enter group name"
-                    onChange={groupNameHandler}
-                  />
                   <Table
                     aria-label="Example static collection table"
                     selectionMode="multiple"
@@ -198,9 +165,9 @@ export default function CreateGroup() {
                 </Button>
                 <Button
                   color="primary"
-                  onPress={() => groupCreateHandler(onClose)}
+                  onPress={() => addNewMemberHandler(onClose)}
                 >
-                  Create a group
+                  Add members
                 </Button>
               </ModalFooter>
             </>

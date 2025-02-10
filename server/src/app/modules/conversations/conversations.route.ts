@@ -45,7 +45,7 @@ router.delete(
 router.put(
   '/addParticipantToGroup',
   // validateAccessTokenWithUID,
-  conversationsController.updateGroupConversation,
+  conversationsController.addNewParticipantToGroup,
 );
 
 router.delete(

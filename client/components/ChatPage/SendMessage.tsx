@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { IoSendSharp } from "react-icons/io5";
@@ -7,6 +7,7 @@ import {
   useUpdateMidOfConversationMutation,
 } from "@/redux/api/apiSlice";
 import { SocketContext } from "@/redux/provider/SocketProvider";
+import { debounce } from "lodash"; // ✅ Import debounce from Lodash
 
 export default function MessageInputs({
   CId,
@@ -24,9 +25,12 @@ export default function MessageInputs({
   const [sendMessage, { isLoading }] = useSendMessageMutation();
   const [updateMIdOfConversation] = useUpdateMidOfConversationMutation();
 
-  const sendMessageHandler = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
+  // UseRef to store debounce function
+  const debounceRef = useRef<any>(null);
+
+  // Function to handle sending messages
+  const sendMessageHandler = async () => {
+    if (!message.trim()) return; // Prevent sending empty messages
 
     try {
       const payload = { content: message, CId, senderId };
@@ -75,10 +79,30 @@ export default function MessageInputs({
     }
   };
 
+  // Debounced function to prevent spamming
+  const debouncedSendMessage = debounce(() => {
+    sendMessageHandler();
+  }, 500); // Adjust debounce time (500ms)
+
+  // Function to handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Prevent new line
+      if (debounceRef.current) debounceRef.current.cancel(); // Cancel previous debounce
+      debounceRef.current = debouncedSendMessage;
+      debouncedSendMessage(); // Call debounced function
+    }
+  };
+
   return (
     <section className="w-full mt-10 flex justify-center items-center gap-5">
       <form
-        onSubmit={sendMessageHandler}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (debounceRef.current) debounceRef.current.cancel(); // Cancel previous debounce
+          debounceRef.current = debouncedSendMessage;
+          debouncedSendMessage(); // Call debounced function
+        }}
         className="py-3 px-8 shadow-md shadow-[#51469960] rounded-full flex justify-center items-center w-1/2"
       >
         <Textarea
@@ -87,6 +111,7 @@ export default function MessageInputs({
           className="resize-none border-none !p-0 !h-[20px]"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown} // Listen for Enter key
         />
         <Button
           type="submit"

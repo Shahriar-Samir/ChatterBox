@@ -113,7 +113,7 @@ const addParticipantInGroupConversation = async (
   payload: TParticipant,
 ) => {
   const result = await ConversationModel.updateOne(
-    { CId, type: 'group' },
+    { CId, type: 'group', isDeleted: false },
     {
       $addToSet: { participants: payload },
     },

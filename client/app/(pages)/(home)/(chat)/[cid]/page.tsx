@@ -68,7 +68,7 @@ export default function Chat() {
             return participant.uid !== currentUser.uid;
           }
         );
-        if (inboxUser.length > 1) {
+        if (conversationDetails.type === "group") {
           setInboxUser("loading");
         } else {
           setInboxUser(inboxUser[0]);
@@ -89,7 +89,7 @@ export default function Chat() {
     };
     getConversationDetails();
     getAllMessages();
-  }, [cid, currentUser, activeUsers]);
+  }, [cid, currentUser]);
 
   const user = useAppSelector((state) => state.user);
 
@@ -162,7 +162,7 @@ export default function Chat() {
           </div>
         </section>
         <section className="w-full mt-5">
-          <div className="w-full flex flex-col gap-5 h-[70vh] overflow-y-auto pb-3">
+          <div className="w-full flex flex-col gap-5 h-[70vh] overflow-y-auto pb-3 px-5">
             {messages.length > 0 ? (
               messages.map((messageData: any) => {
                 const variant =

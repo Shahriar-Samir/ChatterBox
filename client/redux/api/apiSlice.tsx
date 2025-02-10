@@ -119,9 +119,10 @@ export const chatterBoxApi = createApi({
 
     // 2️⃣ Add a participant to a group conversation
     addGroupUser: builder.mutation({
-      query: ({ CId, UId }) => ({
-        url: `/conversations/addParticipantToGroup?cid=${CId}&uid=${UId}`,
-        method: "POST",
+      query: ({ CId, payload }) => ({
+        url: `/conversations/addParticipantToGroup?cid=${CId}`,
+        method: "PUT",
+        body: payload,
       }),
     }),
 
@@ -153,5 +154,7 @@ export const {
   useGetConversationUsersMutation,
   useGetSingleUserMutation,
   useUpdateGroupMutation,
-  useLeaveGroupConversationMutation
+  useLeaveGroupConversationMutation,
+  useRemoveGroupUserMutation,
+  useAddGroupUserMutation,
 } = chatterBoxApi;

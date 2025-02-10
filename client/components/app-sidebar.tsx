@@ -23,6 +23,7 @@ import { useAppSelector } from "@/hooks/hooks";
 import { SocketContext } from "@/redux/provider/SocketProvider";
 import CreateGroup from "./ChatPage/createGroup";
 import { FaUserCircle } from "react-icons/fa";
+import { MdGroups2 } from "react-icons/md";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -57,7 +58,6 @@ export function AppSidebar() {
   useEffect(() => {
     if (socket) {
       socket?.on("conversationUpdate", (updatedConversation: any) => {
-        console.log(updatedConversation);
         const removedUpdatedConversation = conversations.filter((con: any) => {
           return con.CId !== updatedConversation.CId;
         });
@@ -68,7 +68,7 @@ export function AppSidebar() {
           (a, b) =>
             new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
         );
-        console.log(sortedConversations);
+
         setConversations(sortedConversations);
       });
       return () => {
@@ -110,7 +110,6 @@ export function AppSidebar() {
                   const inboxUser = con.participants.filter((participant) => {
                     return participant.uid !== currentUser.uid;
                   });
-                  console.log(inboxUser);
                   return (
                     <SidebarMenuItem
                       key={
@@ -122,7 +121,11 @@ export function AppSidebar() {
                       <SidebarMenuButton asChild>
                         <a href={con.CId} className="w-full h-full">
                           <div className="rounded-full h-[50px] w-[50px]">
-                            <FaUserCircle className="w-full h-full" />
+                            {con.type === "inbox" ? (
+                              <FaUserCircle className="w-full h-full" />
+                            ) : (
+                              <MdGroups2 className="w-full h-full" />
+                            )}
                           </div>
                           <span>
                             {con.type === "group"
