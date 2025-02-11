@@ -48,12 +48,13 @@ export function AppSidebar() {
   }, [currentUser, getConversations]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    let value = e.target.value;
     if (value.length > 0) {
       setSearchTerm(value);
       router.push(`/search/${encodeURIComponent(value)}`);
     } else {
-      router.push("/chat");
+      setSearchTerm("");
+      router.push("/");
     }
   };
   useEffect(() => {

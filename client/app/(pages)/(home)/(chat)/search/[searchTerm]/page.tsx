@@ -33,7 +33,6 @@ export default function Search() {
   };
 
   const startConversationHandler = async (receiverUser: any) => {
-
     let type = "";
     if (receiverUser?.uid) {
       type = "inbox";
