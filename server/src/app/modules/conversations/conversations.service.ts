@@ -44,27 +44,26 @@ const createAConversationIntoDB = async (payload: TConversation) => {
     throw new Error('Number of participants cannot be one or less');
   }
 
-  // const participantUids = payload.participants.map((p) => p.uid);
+  const participantUids = payload.participants.map((p) => p.uid);
+  console.log(participantUids);
 
-  // const commonExist = await ConversationModel.findOne({
-  //   participants: { $all: participantUids }, // Match all participants' uids
-  //   $expr: { $eq: [{ $size: '$participants' }, 2] }, // Ensure exactly 2 participants
-  //   type: payload.type,
-  //   isDeleted: false,
-  // }).select({
-  //   name: 0,
-  //   __v: 0,
-  //   createdAt: 0,
-  //   updatedAt: 0,
-  //   participants: 0,
-  //   isDeleted: 0,
-  // });
-
-  // console.log(payload);
-
-  // if (commonExist) {
-  //   return commonExist; // Return existing conversation
-  // }
+  const commonExist = await ConversationModel.findOne({
+    'participants.uid': { $all: participantUids }, // Ensure both users exist
+    $expr: { $eq: [{ $size: '$participants' }, 2] }, // Ensure exactly 2 participants
+    type: 'inbox',
+    isDeleted: false,
+  }).select({
+    name: 0,
+    __v: 0,
+    createdAt: 0,
+    updatedAt: 0,
+    participants: 0,
+    isDeleted: 0,
+  });
+  console.log(payload);
+  if (commonExist) {
+    return commonExist; // Return existing conversation
+  }
 
   // Validation for max participants based on conversation type
   if (payload.type === 'inbox' && payload.participants.length > 2) {

@@ -43,7 +43,7 @@ export default function DeleteConversation({
     if (modalType === "leave") {
       try {
         await leaveGroupConversation({ CId, UId: currentUser.uid });
-        router.push("/");
+        router.push("/CID0");
       } catch (err) {
         console.log(err);
       }

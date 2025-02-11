@@ -24,6 +24,7 @@ import { SocketContext } from "@/redux/provider/SocketProvider";
 import CreateGroup from "./ChatPage/createGroup";
 import { FaUserCircle } from "react-icons/fa";
 import { MdGroups2 } from "react-icons/md";
+import Link from "next/link";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -119,7 +120,7 @@ export function AppSidebar() {
                       }
                     >
                       <SidebarMenuButton asChild>
-                        <a href={con.CId} className="w-full h-full">
+                        <Link href={`/${con.CId}`} className="w-full h-full">
                           <div className="rounded-full h-[50px] w-[50px]">
                             {con.type === "inbox" ? (
                               <FaUserCircle className="w-full h-full" />
@@ -132,7 +133,7 @@ export function AppSidebar() {
                               ? con.name
                               : `${inboxUser[0].firstName} ${inboxUser[0].lastName}`}
                           </span>
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );

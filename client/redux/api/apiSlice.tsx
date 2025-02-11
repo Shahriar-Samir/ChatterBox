@@ -75,7 +75,7 @@ export const chatterBoxApi = createApi({
     }),
     startConversation: builder.mutation({
       query: (credentials) => ({
-        url: `/conversations`,
+        url: `/conversations/startConversation`,
         method: "POST",
         body: credentials,
       }),

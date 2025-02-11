@@ -15,6 +15,8 @@ import { useAppSelector } from "@/hooks/hooks";
 import DeleteConversation from "@/components/ChatPage/DeleteConversation";
 import { toast } from "react-toastify";
 import AddParticipant from "@/components/ChatPage/addParticipant";
+import { FaUserCircle } from "react-icons/fa";
+import { MdGroups2 } from "react-icons/md";
 
 export default function Details() {
   const params: { cid: string } = useParams();
@@ -32,8 +34,6 @@ export default function Details() {
     getConversationDetails();
   }, [cid, removeGroupUser]);
 
-
-
   const removeParticipant = async (UId: string) => {
     try {
       await removeGroupUser({ UId, CId: cid });
@@ -49,28 +49,36 @@ export default function Details() {
   return (
     <main className="flex justify-center items-center w-full">
       <section className="flex flex-col items-center gap-5 w-full">
-        <Image
-          src={details?.img}
-          height={500}
-          width={500}
-          alt="profile image"
-          className="w-[100px] h-[100px] border rounded-full"
-        />
+        {details.img ? (
+          <Image
+            src={details?.img}
+            height={500}
+            width={500}
+            alt="profile image"
+            className="w-[100px] h-[100px] border rounded-full"
+          />
+        ) : (
+          <MdGroups2 className="text-7xl border border-black dark:border-white p-2 rounded-full" />
+        )}
         <h1>{details?.name}</h1>
-        <AddParticipant details={details}/>
+        <AddParticipant details={details} />
         <DeleteConversation type="group" CId={cid} route="details" />
-        <section className="flex flex-col w-11/12 mx-auto max-w-[500px]">
+        <section className="flex flex-col w-11/12 mx-auto max-w-[500px] gap-3">
           {details?.participants?.map((user) => {
             return (
               <div className="flex justify-between w-full ">
                 <div className="flex items-center gap-4">
-                  <Image
-                    height={500}
-                    width={500}
-                    alt="user"
-                    className="w-[50px] h-[50px] rounded-full"
-                    src=""
-                  />
+                  {user.img ? (
+                    <Image
+                      height={500}
+                      width={500}
+                      alt="user"
+                      className="w-[50px] h-[50px] rounded-full"
+                      src=""
+                    />
+                  ) : (
+                    <FaUserCircle className="w-[40px] h-[40px] border rounded-full " />
+                  )}
                   <h1>
                     {user.firstName} {user.lastName}
                   </h1>

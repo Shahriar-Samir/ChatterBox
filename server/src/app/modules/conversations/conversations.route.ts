@@ -16,7 +16,7 @@ router.get(
   conversationsController.getSingleUserConversation,
 );
 router.post(
-  '/',
+  '/startConversation',
   // validateAccessTokenWithUID,
   conversationsController.startANewConversation,
 );

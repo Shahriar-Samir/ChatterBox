@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { IoSendSharp } from "react-icons/io5";
@@ -25,8 +25,9 @@ export default function MessageInputs({
   const [sendMessage, { isLoading }] = useSendMessageMutation();
   const [updateMIdOfConversation] = useUpdateMidOfConversationMutation();
 
-  // UseRef to store debounce function
+  // UseRef to store debounce function and reference to the Textarea element
   const debounceRef = useRef<any>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Function to handle sending messages
   const sendMessageHandler = async () => {
@@ -94,6 +95,20 @@ export default function MessageInputs({
     }
   };
 
+  // Function to dynamically resize the textarea based on the content
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      // Reset height to auto, then set it to scrollHeight to fit content
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  // Adjust height whenever the message changes
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [message]);
+
   return (
     <section className="w-full mt-10 flex justify-center items-center gap-5">
       <form
@@ -103,15 +118,20 @@ export default function MessageInputs({
           debounceRef.current = debouncedSendMessage;
           debouncedSendMessage(); // Call debounced function
         }}
-        className="py-3 px-8 shadow-md shadow-[#51469960] rounded-full flex justify-center items-center w-1/2"
+        className="py-3 border-t border-[#241d50] pt-4 px-8 shadow-md shadow-[#51469960] rounded-full flex justify-center items-center w-1/2 gap-5 "
       >
         <Textarea
+          ref={textareaRef}
           name="message"
           placeholder="Write a message ..."
-          className="resize-none border-none !p-0 !h-[20px]"
+          className="resize-none border-none !p-0  max-h-[70px]  !overflow-y-auto"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown} // Listen for Enter key
+          style={{
+            overflow: "hidden", // Ensure no scrollbar
+            minHeight: "50px", // Optional: Minimum height for the textarea
+          }}
         />
         <Button
           type="submit"

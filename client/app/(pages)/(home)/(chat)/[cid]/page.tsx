@@ -119,7 +119,7 @@ export default function Chat() {
           <div className="flex gap-5 items-center">
             <Link
               href={
-                inboxUser.uid
+                conversationDetails.type === "inbox"
                   ? `/user-details/${inboxUser.uid}`
                   : `/group-details/${cid}`
               }
