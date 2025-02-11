@@ -37,7 +37,7 @@ export default function MessageInputs({
       const payload = { content: message, CId, senderId };
       const res = await sendMessage({
         messageData: payload,
-        receiverId,
+        receivers: receiverId,
       }).unwrap();
 
       if (!res?.data) throw new Error("Message sending failed");

@@ -6,7 +6,7 @@ import UserModel from './users.model';
 import bcrypt from 'bcrypt';
 
 const getSingleUserFromDB = async (uid: string) => {
-  console.log(uid);
+
   const result = await UserModel.findOne({ uid, isDeleted: false });
   return result;
 };
@@ -34,7 +34,7 @@ const getConversationUsersFromDB = async (uid: string) => {
   const uniqueUsers = Array.from(
     new Map(users.map((user) => [user.uid, user])).values(),
   );
-  console.log(uniqueUsers);
+
   return uniqueUsers;
 };
 

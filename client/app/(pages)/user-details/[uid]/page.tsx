@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useGetSingleConversationMutation,
-  useGetSingleUserMutation,
-} from "@/redux/api/apiSlice";
+import { useGetSingleUserMutation } from "@/redux/api/apiSlice";
 import { Button } from "@heroui/button";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -11,7 +8,6 @@ import React, { useEffect, useState } from "react";
 
 export default function Details() {
   const params: { uid: string } = useParams();
-  const [getSingleConversation] = useGetSingleConversationMutation();
   const [getSingleUser] = useGetSingleUserMutation();
   const [details, setDetails] = useState<any>({});
   const { uid } = params;

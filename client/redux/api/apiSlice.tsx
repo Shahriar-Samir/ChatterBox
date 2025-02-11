@@ -49,10 +49,10 @@ export const chatterBoxApi = createApi({
       }),
     }),
     sendMessage: builder.mutation({
-      query: ({ messageData, receiverId }) => ({
-        url: `/messages?receiverId=${receiverId}`,
+      query: (payload) => ({
+        url: `/messages?uid=${payload.messageData.senderId}`,
         method: "POST",
-        body: messageData,
+        body: payload,
       }),
     }),
     removeMessageFromAll: builder.mutation({
@@ -82,13 +82,18 @@ export const chatterBoxApi = createApi({
     }),
     updateMidOfConversation: builder.mutation({
       query: (params) => ({
-        url: `/conversations/updateMIdOfConversation?CID=${params.CID}&MId=${params.MId}&receiverId=${params.receiverId}`,
+        url: `/conversations/updateMIdOfConversation?CID=${params.CID}&MId=${params.MId}`,
         method: "PATCH",
+        body: Array.isArray(params.receiverId)
+          ? {
+              receivers: params.receiverId,
+            }
+          : params.receiverId,
       }),
     }),
     getSingleConversation: builder.mutation({
       query: (CId) => ({
-        url: `/conversations/singleConversation/${CId}`,
+        url: `/conversations/singleConversation?cid=${CId}`,
         method: "GET",
       }),
     }),

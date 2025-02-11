@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import AddParticipant from "@/components/ChatPage/addParticipant";
 import { FaUserCircle } from "react-icons/fa";
 import { MdGroups2 } from "react-icons/md";
+import { FaRegStar } from "react-icons/fa";
 
 export default function Details() {
   const params: { cid: string } = useParams();
@@ -32,7 +33,7 @@ export default function Details() {
       setDetails(res.data.data);
     };
     getConversationDetails();
-  }, [cid, removeGroupUser]);
+  }, [cid, currentUser, removeGroupUser]);
 
   const removeParticipant = async (UId: string) => {
     try {
@@ -79,8 +80,9 @@ export default function Details() {
                   ) : (
                     <FaUserCircle className="w-[40px] h-[40px] border rounded-full " />
                   )}
-                  <h1>
-                    {user.firstName} {user.lastName}
+                  <h1 className="flex  items-center gap-2">
+                    {user.firstName} {user.lastName}{" "}
+                    {user.uid == details?.adminId ? <FaRegStar /> : ""}
                   </h1>
                 </div>
                 <div className="flex gap-2">

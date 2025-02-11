@@ -11,22 +11,20 @@ const getAllConversationMessages = async (CId: string) => {
   return result;
 };
 
-const createAMessageIntoDB = async (
-  payload: TMessages,
-  receiverId: string | string[],
-) => {
+const createAMessageIntoDB = async (payload: any) => {
   const MId = await IdGenerator('message');
-  payload.MId = MId as string;
-  const result = await MessageModel.create(payload);
+  payload.messageData.MId = MId as string;
+
+  const result = await MessageModel.create(payload.messageData);
 
   let receiverSocketIds: string[];
 
-  if (Array.isArray(receiverId)) {
-    // If receiverId is an array, get the socket IDs for each receiver
-    receiverSocketIds = receiverId.map((id) => getReceiverSocketId(id));
+  if (Array.isArray(payload.receivers)) {
+    const receiversUid = payload.receivers.map((receiver: any) => receiver.uid);
+    receiverSocketIds = receiversUid.map((id: any) => getReceiverSocketId(id));
   } else {
     // If it's a single receiver, just get the socket ID
-    receiverSocketIds = [getReceiverSocketId(receiverId)];
+    receiverSocketIds = [getReceiverSocketId(payload.receivers)];
   }
 
   // Emit the 'newMessage' event to each receiver

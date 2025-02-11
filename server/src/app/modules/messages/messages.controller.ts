@@ -17,7 +17,6 @@ const getAllConversationMessages = catchAsync(async (req, res) => {
 const sendMessage = catchAsync(async (req, res) => {
   const result = await messagesService.createAMessageIntoDB(
     req.body,
-    req.query.receiverId as string,
   );
   sendResponse(res, {
     success: true,

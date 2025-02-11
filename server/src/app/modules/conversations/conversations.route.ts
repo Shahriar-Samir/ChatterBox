@@ -6,13 +6,13 @@ const router = express.Router();
 
 router.get(
   '/allUserConversations/:uid',
-  // validateAccessTokenWithUID,
+  validateAccessTokenWithUID,
   conversationsController.getAllUserConversation,
 );
 
 router.get(
-  '/singleConversation/:cid',
-  // validateAccessTokenWithUID,
+  '/singleConversation',
+  validateAccessTokenWithUID,
   conversationsController.getSingleUserConversation,
 );
 router.post(

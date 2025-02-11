@@ -14,6 +14,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { useLoginMutation } from "@/redux/api/apiSlice";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function App() {
   const [login, { isLoading, isError, error }] = useLoginMutation();
@@ -144,8 +145,7 @@ export default function App() {
 
             <div className="flex gap-4">
               <Button
-                className="w-full text dark:text-white"
-                color="primary"
+                className="w-full text bg-commonColor text-white "
                 type="submit"
               >
                 Login
@@ -154,6 +154,12 @@ export default function App() {
                 Reset
               </Button>
             </div>
+            <h1 className="text-center text-sm">
+              Don't have an account ?{" "}
+              <Link href="/signup" className="underline text-bold">
+                Signup
+              </Link>
+            </h1>
           </div>
         </Form>
       </section>

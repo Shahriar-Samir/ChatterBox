@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { IoSendSharp, IoVideocam } from "react-icons/io5";
 import { GoDot, GoDotFill } from "react-icons/go";
 import {
@@ -17,6 +17,7 @@ import { useContext, useEffect, useState, useRef } from "react"; // Import useRe
 import {
   useGetConversationMessagesMutation,
   useGetSingleConversationMutation,
+  useGetUserConversationsMutation,
 } from "@/redux/api/apiSlice";
 import MessageInputs from "@/components/ChatPage/SendMessage";
 import MessageOptions from "@/components/ChatPage/MessageOptions";
@@ -36,14 +37,15 @@ import Link from "next/link";
 
 export default function Chat() {
   const { cid } = useParams();
+  const router = useRouter();
   const { socket, setMessages, messages, conversations, setConversations } =
     useContext<any>(SocketContext);
 
-  const [getConversationMessages, { data, isLoading, isError }] =
+  const [getConversationMessages, { isLoading, isError }] =
     useGetConversationMessagesMutation();
   const [getSingleConversation, { isLoading: isLoadingForSingleConversation }] =
     useGetSingleConversationMutation();
-
+  const [getConversations] = useGetUserConversationsMutation();
   const [conversationDetails, setConversationDetails] = useState<any>([]);
   const [inboxUser, setInboxUser] = useState<any>("loading");
   const currentUser = useAppSelector((state) => state.user);
@@ -61,6 +63,15 @@ export default function Chat() {
   useEffect(() => {
     const getConversationDetails = async () => {
       try {
+        const conversationsData = await getConversations(currentUser.uid);
+        const conversationUIds = conversationsData.data.data.map(
+          (item: any) => {
+            return item.CId;
+          }
+        );
+        if (!conversationUIds.includes(cid)) {
+          return router.push("/");
+        }
         const response = await getSingleConversation(cid);
         setConversationDetails(response.data.data);
         const inboxUser = response.data.data.participants.filter(
@@ -71,7 +82,11 @@ export default function Chat() {
         if (conversationDetails.type === "group") {
           setInboxUser("loading");
         } else {
-          setInboxUser(inboxUser[0]);
+          if (inboxUser.length > 1) {
+            setInboxUser(inboxUser);
+          } else {
+            setInboxUser(inboxUser[0]);
+          }
           const userActive = activeUsers.users.includes(inboxUser[0].uid);
           setIsActive(userActive);
         }
@@ -82,6 +97,15 @@ export default function Chat() {
     const getAllMessages = async () => {
       try {
         const response = await getConversationMessages(cid);
+        const conversationsData = await getConversations(currentUser.uid);
+        const conversationUIds = conversationsData.data.data.map(
+          (item: any) => {
+            return item.CId;
+          }
+        );
+        if (!conversationUIds.includes(cid)) {
+          return router.push("/");
+        }
         setMessages(response.data.data);
       } catch (error) {
         console.error(error);
@@ -110,7 +134,7 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
+  console.log(inboxUser, "inbox");
   return (
     <main className="rounded-xl w-full my-auto">
       <SidebarTrigger />
@@ -144,6 +168,8 @@ export default function Chat() {
                   <h2 className="text-sm flex items-center gap-1">
                     Active <GoDotFill className="text-green-500" />
                   </h2>
+                ) : Array.isArray(inboxUser) ? (
+                  <h2 className="text-sm flex items-center gap-1">Group</h2>
                 ) : (
                   <h2 className="text-sm flex items-center gap-1">Offline</h2>
                 )}
@@ -193,8 +219,21 @@ export default function Chat() {
                       )}
                       <div>
                         <h1 className="text-xs">
-                          {variant === "sent" ? "" : inboxUser.firstName}
+                          {variant === "sent"
+                            ? ""
+                            : Array.isArray(inboxUser)
+                              ? (() => {
+                                  const foundUser = inboxUser.find(
+                                    (user: any) =>
+                                      user.uid === messageData.senderId
+                                  );
+                                  return foundUser
+                                    ? `${foundUser.firstName} ${foundUser.lastName}`
+                                    : "";
+                                })()
+                              : `${inboxUser?.firstName || ""} ${inboxUser?.lastName || ""}`}
                         </h1>
+
                         {variant === "sent" &&
                         messageData.isDeletedForSender ? (
                           <ChatBubbleMessage
@@ -257,7 +296,7 @@ export default function Chat() {
           </div>
           <MessageInputs
             senderId={user.uid as string}
-            receiverId={inboxUser.uid}
+            receiverId={Array.isArray(inboxUser) ? inboxUser : inboxUser.uid}
             CId={cid as string}
           />
         </section>

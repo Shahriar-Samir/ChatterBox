@@ -42,7 +42,7 @@ const addNewParticipantToGroup = catchAsync(async (req, res) => {
 
 const getSingleUserConversation = catchAsync(async (req, res) => {
   const result = await conversationsService.getSingleConversationsFromDB(
-    req.params.cid,
+    req.query.cid as string,
   );
   sendResponse(res, {
     success: true,
@@ -66,7 +66,7 @@ const updateMIDofConversation = catchAsync(async (req, res) => {
   const result = await conversationsService.updateLastMessageIdOfConversation(
     req.query.CID as string,
     req.query.MId as string,
-    req.query.receiverId as string,
+    req.body as any,
   );
 
   sendResponse(res, {

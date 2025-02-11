@@ -1,10 +1,11 @@
 import express from 'express';
 import messagesController from './messages.controller';
+import { validateAccessTokenWithUID } from '../../middlewares/auth';
 
 const router = express.Router();
 
 router.get('/:cid', messagesController.getAllConversationMessages);
-router.post('/', messagesController.sendMessage);
+router.post('/', validateAccessTokenWithUID, messagesController.sendMessage);
 router.patch('/:mid', messagesController.editAMessage);
 router.delete('/removeForAll/:mid', messagesController.removeAMessageForAll);
 router.delete(

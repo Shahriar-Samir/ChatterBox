@@ -45,7 +45,7 @@ const createAConversationIntoDB = async (payload: TConversation) => {
   }
 
   const participantUids = payload.participants.map((p) => p.uid);
-  console.log(participantUids);
+
 
   const commonExist = await ConversationModel.findOne({
     'participants.uid': { $all: participantUids }, // Ensure both users exist
@@ -60,7 +60,7 @@ const createAConversationIntoDB = async (payload: TConversation) => {
     participants: 0,
     isDeleted: 0,
   });
-  console.log(payload);
+
   if (commonExist) {
     return commonExist; // Return existing conversation
   }
@@ -132,10 +132,12 @@ const updateLastMessageIdOfConversation = async (
     { lastMessageId: MId },
     { new: true }, // Ensures the updated document is returned
   );
-  console.log(receiverId);
+  const receivers = receiverId?.receivers.map((receiver) => {
+    return receiver.uid;
+  });
 
   // Get socket ID(s) for the receiver(s)
-  const receiverSocketIds = getReceiverSocketId(receiverId);
+  const receiverSocketIds = getReceiverSocketId(receivers);
 
   if (Array.isArray(receiverSocketIds)) {
     // If it's an array (multiple receivers), emit to each socket

@@ -7,6 +7,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { useSignupMutation } from "@/redux/api/apiSlice";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function App() {
   const [signup, { isLoading, isError, error }] = useSignupMutation();
@@ -14,47 +15,10 @@ export default function App() {
   const [errors, setErrors] = React.useState<any>({});
   const router = useRouter();
 
-  // Real-time password validation
-  // const getPasswordError = (value: any) => {
-  //   if (value.length < 4) {
-  //     return "Password must be 4 characters or more";
-  //   }
-  //   if ((value.match(/[A-Z]/g) || []).length < 1) {
-  //     return "Password needs at least 1 uppercase letter";
-  //   }
-  //   if ((value.match(/[^a-z]/gi) || []).length < 1) {
-  //     return "Password needs at least 1 symbol";
-  //   }
-
-  //   return null;
-  // };
-
   const onSubmit = async (e: any) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
 
-    // Custom validation checks
-    // const newErrors: {
-    //   firstName?: string;
-    //   lastName?: string;
-    //   password?: string;
-    //   email?: string;
-    // } = {};
-
-    // Password validation
-    // const passwordError = getPasswordError(data.password);
-
-    // if (passwordError) {
-    //   newErrors.password = passwordError;
-    // }
-
-    // if (Object.keys(newErrors).length > 0) {
-    //   setErrors(newErrors);
-
-    //   return;
-    // }
-    // // Clear errors and submit
-    // setErrors({});
     try {
       const result = await signup(data).unwrap();
       toast({
@@ -148,8 +112,6 @@ export default function App() {
 
             <Input
               isRequired
-              // errorMessage={getPasswordError(password)}
-              // isInvalid={getPasswordError(password) !== null}
               label="Password"
               labelPlacement="outside"
               name="password"
@@ -165,8 +127,7 @@ export default function App() {
 
             <div className="flex gap-4">
               <Button
-                className="w-full text dark:text-white"
-                color="primary"
+                className="w-full text bg-commonColor text-white "
                 type="submit"
               >
                 Create an account
@@ -175,6 +136,12 @@ export default function App() {
                 Reset
               </Button>
             </div>
+            <h1 className="text-center text-sm">
+              Don't have an account ?{" "}
+              <Link href="/login" className="underline text-bold">
+                login
+              </Link>
+            </h1>
           </div>
         </Form>
       </section>
