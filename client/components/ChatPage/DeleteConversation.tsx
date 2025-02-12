@@ -60,18 +60,6 @@ export default function DeleteConversation({
 
           <DropdownMenu aria-label="Static Actions">
             <DropdownItem
-              key="delete"
-              className="text-danger"
-              color="danger"
-              onPress={() => {
-                setModalType("delete");
-                onOpen();
-              }}
-            >
-              Delete Conversation
-            </DropdownItem>
-
-            <DropdownItem
               key="leave"
               className="text-danger"
               onPress={() => {

@@ -39,10 +39,9 @@ export default function AddParticipant({ details }: { details: any }) {
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]); // Updated to store user objects
 
   // Update handler to store full user objects instead of just ids
-  const addNewMemberHandler = async (onClose) => {
-    console.log(selectedUsers);
+  const addNewMemberHandler = async (onClose: any) => {
     const data = {
-      selectedUsers: selectedUsers, // full user objects
+      selectedUsers, // full user objects
     };
 
     if (selectedUsers.length < 1) {

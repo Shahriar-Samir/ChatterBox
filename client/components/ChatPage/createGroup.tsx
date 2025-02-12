@@ -56,7 +56,7 @@ export default function CreateGroup() {
       return;
     }
 
-    if (selectedUsers.length < 2) {
+    if (selectedUsers.length < 1) {
       setErrors({ groupName: "Group participants not selected" });
       return;
     }
@@ -87,12 +87,12 @@ export default function CreateGroup() {
       type: "group",
     };
     const res = await startConversation(payload);
-    console.log(res);
+    console.log(res, "response");
     const updatedConversations = [...conversations, res.data.data].sort(
       (a: any, b: any) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
-
+    console.log(updatedConversations, "consss");
     setConversations(updatedConversations);
     router.push(`/${res.data.data.CId}`);
     onClose();
@@ -118,8 +118,6 @@ export default function CreateGroup() {
     );
     setSelectedUsers(selectedUserObjects); // store full user objects
   };
-
-
 
   return (
     <>

@@ -33,7 +33,6 @@ const createAConversationIntoDB = async (payload: TConversation) => {
     CId,
     isDeleted: false,
   });
-
   if (isConversationExist) {
     throw new Error('Conversation already exists');
   }
@@ -45,7 +44,6 @@ const createAConversationIntoDB = async (payload: TConversation) => {
   }
 
   const participantUids = payload.participants.map((p) => p.uid);
-
 
   const commonExist = await ConversationModel.findOne({
     'participants.uid': { $all: participantUids }, // Ensure both users exist
@@ -61,7 +59,7 @@ const createAConversationIntoDB = async (payload: TConversation) => {
     isDeleted: 0,
   });
 
-  if (commonExist) {
+  if (commonExist && payload.type === 'inbox') {
     return commonExist; // Return existing conversation
   }
 
