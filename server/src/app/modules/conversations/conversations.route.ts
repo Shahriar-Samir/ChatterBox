@@ -12,7 +12,7 @@ router.get(
 
 router.get(
   '/singleConversation',
-  validateAccessTokenWithUID,
+  // validateAccessTokenWithUID,
   conversationsController.getSingleUserConversation,
 );
 router.post(

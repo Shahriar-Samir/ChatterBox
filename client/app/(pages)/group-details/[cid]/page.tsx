@@ -28,11 +28,13 @@ export default function Details() {
   const { cid } = params;
 
   useEffect(() => {
-    const getConversationDetails = async () => {
-      const res = await getSingleConversation(cid);
-      setDetails(res.data.data);
-    };
-    getConversationDetails();
+    if (currentUser.uid) {
+      const getConversationDetails = async () => {
+        const res = await getSingleConversation(cid);
+        setDetails(res.data.data);
+      };
+      getConversationDetails();
+    }
   }, [cid, currentUser, removeGroupUser]);
 
   const removeParticipant = async (UId: string) => {

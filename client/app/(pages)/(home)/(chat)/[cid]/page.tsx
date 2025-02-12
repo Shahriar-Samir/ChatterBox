@@ -34,6 +34,7 @@ import DeleteConversation from "@/components/ChatPage/DeleteConversation";
 import { SocketContext } from "@/redux/provider/SocketProvider";
 import { FaUserCircle } from "react-icons/fa";
 import Link from "next/link";
+import { Spinner } from "@heroui/spinner";
 
 export default function Chat() {
   const { cid } = useParams();
@@ -41,7 +42,7 @@ export default function Chat() {
   const { socket, setMessages, messages, conversations, setConversations } =
     useContext<any>(SocketContext);
 
-  const [getConversationMessages, { isLoading, isError }] =
+  const [getConversationMessages, { isLoading: messagesLoading, isError }] =
     useGetConversationMessagesMutation();
   const [getSingleConversation, { isLoading: isLoadingForSingleConversation }] =
     useGetSingleConversationMutation();
@@ -97,6 +98,9 @@ export default function Chat() {
     const getAllMessages = async () => {
       try {
         const response = await getConversationMessages(cid);
+        if (!currentUser.uid) {
+          return;
+        }
         const conversationsData = await getConversations(currentUser.uid);
         const conversationUIds = conversationsData.data.data.map(
           (item: any) => {
@@ -111,8 +115,10 @@ export default function Chat() {
         console.error(error);
       }
     };
-    getConversationDetails();
-    getAllMessages();
+    if (currentUser.uid) {
+      getConversationDetails();
+      getAllMessages();
+    }
   }, [cid, currentUser]);
 
   const user = useAppSelector((state) => state.user);
@@ -288,8 +294,12 @@ export default function Chat() {
                   </ChatBubble>
                 );
               })
+            ) : messagesLoading ? (
+              <div className="flex justify-center items-center h-full w-full">
+                <Spinner />
+              </div>
             ) : (
-              <p>loading</p>
+              <p className="text-center">Start sending messages</p>
             )}
             {/* Add a div at the end of the messages to scroll into view */}
             <div ref={messagesEndRef} />

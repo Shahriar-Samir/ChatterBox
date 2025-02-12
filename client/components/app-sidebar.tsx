@@ -25,13 +25,15 @@ import CreateGroup from "./ChatPage/createGroup";
 import { FaUserCircle } from "react-icons/fa";
 import { MdGroups2 } from "react-icons/md";
 import Link from "next/link";
+import { Spinner } from "@heroui/spinner";
 
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { socket, conversations, setConversations } =
     useContext<any>(SocketContext);
-  const [getConversations, { data }] = useGetUserConversationsMutation();
+  const [getConversations, { isLoading: conversationsLoading }] =
+    useGetUserConversationsMutation();
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -78,6 +80,7 @@ export function AppSidebar() {
       };
     }
   }, [socket, setConversations, conversations, getConversations]);
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -139,6 +142,8 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                   );
                 })
+              ) : conversationsLoading ? (
+                <Spinner />
               ) : (
                 <h1>No conversations available</h1>
               )}
